@@ -1,0 +1,29 @@
+{
+  "name": "libchain",
+  "version": "0.1.0",
+  "description": "Digital media management running on Ethereum's blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libchain/libchain.git"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "drm",
+    "dapp"
+  ],
+  "author": "juanecabellob, alexandermuehle, gerritja",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/libchain/libchain/issues"
+  },
+  "homepage": "https://github.com/libchain/libchain#readme",
+  "devDependencies": {
+    "ethereumjs-testrpc": "^3.0.3",
+    "truffle": "^3.1.1"
+  }
+}
