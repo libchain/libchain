@@ -1,0 +1,26 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "libUser",
+            "otherEntityName": "libUser",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "title",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "pubKey",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170216111405",
+    "entityTableName": "book",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no"
+}

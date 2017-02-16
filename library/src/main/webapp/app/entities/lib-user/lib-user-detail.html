@@ -1,0 +1,35 @@
+
+<div>
+    <h2><span>Lib User</span> {{vm.libUser.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row jh-entity-details">
+        <dt><span>First Name</span></dt>
+        <dd>
+            <span>{{vm.libUser.firstName}}</span>
+        </dd>
+        <dt><span>Last Name</span></dt>
+        <dd>
+            <span>{{vm.libUser.lastName}}</span>
+        </dd>
+        <dt><span>Email</span></dt>
+        <dd>
+            <span>{{vm.libUser.email}}</span>
+        </dd>
+        <dt><span>Library</span></dt>
+        <dd>
+            <a ui-sref="library-detail({id:vm.libUser.library.id})">{{vm.libUser.library.id}}</a>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="lib-user-detail.edit({id:vm.libUser.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>
