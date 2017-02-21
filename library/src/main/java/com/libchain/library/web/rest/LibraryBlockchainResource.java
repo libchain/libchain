@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by gerrit on 16.02.17.
@@ -35,22 +37,37 @@ public class LibraryBlockchainResource {
          * 2. Get Book
          *      - check whether an instance is available
          *          not available:
-         *              - Response: Failed
+         *              - Response: Forbidden
          * 3. create transaction lib --> pubkey
          * Response: OK
          */
 
-        /*truffle exec <path/to/file.js>*/
-
-        Runtime rt = Runtime.getRuntime();
         try {
-            Process pr = rt.exec("truffle exec borrow.js");
-        } catch (IOException e) {
-            e.printStackTrace();
+            String output = exec("truffle exec borrow.js");
+
+            if (output.equals("OK")) {
+                return new ResponseEntity(output, HttpStatus.OK);
+            } else {
+                return new ResponseEntity(output, HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/info/truffleVersion")
+    @ApiOperation(value = "truffle version",
+        notes = "returns the installed truffle version")
+    @Timed
+    public ResponseEntity truffleVersion() {
+        String output = "";
+        try {
+            output = exec("truffle version");
+        } catch (IOException | InterruptedException | RuntimeException e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity(output, HttpStatus.OK);
     }
 
     @GetMapping("/books/all")
@@ -87,6 +104,26 @@ public class LibraryBlockchainResource {
     @Timed
     public ResponseEntity statisticsBooks(@PathVariable String bookId) {
         return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private String exec(String cmd) throws IOException, InterruptedException {
+        Runtime rt = Runtime.getRuntime();
+
+        String output = "";
+
+        String line;
+        Process pr = rt.exec(cmd);
+        BufferedReader in = new BufferedReader(
+            new InputStreamReader(pr.getInputStream()));
+        while ((line = in.readLine()) != null) {
+            output += line;
+        }
+        in.close();
+        pr.waitFor();
+        if (pr.exitValue() != 0)
+            throw new RuntimeException();
+
+        return output;
     }
 
 }
