@@ -1,0 +1,38 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "loan",
+            "otherEntityName": "book",
+            "otherEntityRelationshipName": "libUser"
+        },
+        {
+            "relationshipName": "library",
+            "otherEntityName": "library",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "firstName",
+            "javadoc": "The firstname attribute.",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "lastName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "email",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170216111405",
+    "javadoc": "The User entity.",
+    "entityTableName": "lib_user",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no"
+}
