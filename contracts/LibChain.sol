@@ -52,8 +52,8 @@ contract Publisher{
 		publishedBooks[bookNum] = new Book(this.name, year, id, gate);
 		bookNum++;
 		// Event for publishing a book
-		PublishBook(publishedBooks[bookNum]);
-		return publishedBooks[bookNum];
+		PublishBook(publishedBooks[bookNum-1]);
+		return publishedBooks[bookNum-1];
 	}
 
 	function buyBook(address bookContract, uint amount){
@@ -96,15 +96,26 @@ contract Library {
 }
 
 contract LibChain{
+	
+	mapping(uint => address) public libraries
+	uint public libNum;
+	mapping(uint => address) public publishers
+	uint public pubNum;
 
 	string public version = '0.1';
 
-	function library(string name) returns (address libraryContract) {
-		return new Library(name);
+	function newLibrary(string name) returns (address libraryContract) {
+		libraries[libNum] = new Library(name);
+		libNum++;
+		NewLibrary(publishedBooks[libNum-1]);
+		return libraries[libNum-1];
 	}
 
-	function publisher(string name, string location) returns (address publisherContract) {
-		return new Publisher(name, location);
+	function newPublisher(string name, string location) returns (address publisherContract) {
+		publishers[pubNum] = new Publisher(name, location);
+		pubNum++;
+		NewPublisher(publishers[pubNum-1]);	
+		return publishers[pubNum-1];
 	}
 
 }
