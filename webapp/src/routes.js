@@ -5,19 +5,18 @@ import LibraryPage from './containers/LibraryPage';
 
 export default (
   <Route path="/" component={App}>
-    <IndexRoute component={() => <LibraryPage isLogged={true} />} />
+    <IndexRoute component={() => <LibraryPage isAdmin={false} />} />
     <Route 
       path="/library"
-      component={() => <LibraryPage isLogged={true} />} >
+      component={() => <LibraryPage isAdmin={false}/>} >
       <Route 
         path="/admin" 
-        component={LibraryPage} >
+        component={() => <LibraryPage isAdmin={true} />} >
         <Route 
           path="/admin/:bookId"
-          component={LibraryPage}
+          component={() => <LibraryPage isAdmin={true} />}
           />
       </Route>
     </Route>
-    <Route path="/book/:bookId" component={LibraryPage} />
   </Route>
 );

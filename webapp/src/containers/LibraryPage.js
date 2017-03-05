@@ -1,7 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import FlatButton from 'material-ui/FlatButton';
-import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import {
+  Table, 
+  TableBody, 
+  TableHeader, 
+  TableHeaderColumn, 
+  TableRow, 
+  TableRowColumn
+} from 'material-ui/Table';
 
 class LibraryPage extends Component {
   static propTypes = {
@@ -52,12 +60,12 @@ class LibraryPage extends Component {
 
   renderTableRows() {
     const { books } = this.state
-    const { isLogged } = this.props
+    const { isLogged, isAdmin } = this.props
 
     return books.map( (book, index) => {
       let button = isLogged ? ( 
         <TableRowColumn>
-          <FlatButton label="Primary" primary={true} />
+          <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} />
         </TableRowColumn>) :
         <div style={{display: 'none'}}></div>
       return (
@@ -95,4 +103,9 @@ class LibraryPage extends Component {
   }
 }
 
-export default LibraryPage
+const mapStateToProps = (state, ownProps) => ({
+  isLogged: state.login.jwt !== null,
+  ...ownProps
+})
+
+export default connect(mapStateToProps)(LibraryPage)

@@ -1,24 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 import FlatButton from 'material-ui/FlatButton';
 
-import { request } from 'superagent';
+import { logout } from '../actions';
 
 class LogOut extends Component {
+  constructor() {
+    super();
+
+    this.handleLogOut = this.handleLogOut.bind(this);
+
+  }
+
   handleLogOut() {
-    request
-      .post('/api/logout')
-      .send('user') // get the user through props
-      .then((res, err) => {
-        // DO SOMETHING 
-      })
-      .catch(err => console.log(err))
+    this.props.sendLogOutRequest()
   }
 
   render() {
     return (
-      <FlatButton label="Log out"  style={{paddingTop: 5, color: 'white'}} />
+      <FlatButton 
+        label="Log out"  
+        style={{paddingTop: 5, paddingBottom: 5, color: 'white'}} 
+        onTouchTap={this.handleLogOut}
+      />
     )
   }
 }
 
-export default LogOut;
+export default connect(null, { sendLogOutRequest: logout })(LogOut);

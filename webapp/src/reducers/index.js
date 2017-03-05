@@ -1,17 +1,63 @@
-import * as ActionTypes from '../actions'
-import merge from 'lodash/merge'
-import paginate from './paginate'
-import { routerReducer as routing } from 'react-router-redux'
-import { combineReducers } from 'redux'
+import * as ActionTypes from '../actions';
+import { routerReducer as routing } from 'react-router-redux';
+import { combineReducers } from 'redux';
 
+import { generateRSAKey, publicKeyString } from 'cryptico'
 // Updates an entity cache in response to any action with response.entities.
-const entities = (state = { users: {}, repos: {} }, action) => {
-  if (action.response && action.response.entities) {
-    return merge({}, state, action.response.entities)
+const login = (state = {
+  jwt: null,
+  isLoading: false
+}, action) => {
+  if (action.type === ActionTypes.LOGOUT_SUCCESS) {
+    localStorage.removeItem('loginToken');
+    return {
+      ...state,
+      jwt: null
+    };
   }
 
-  return state
-}
+  let jwt;
+  switch (action.type) {
+  case ActionTypes.LOGIN_SUCCESS:
+    jwt = action.response.token;
+    localStorage.setItem('loginToken', jwt);
+
+    return {
+      jwt,
+      isLoading: false
+    };
+  case ActionTypes.LOGIN_FAILURE:
+    return {
+      ...state,
+      isLoading: false
+    }
+  case ActionTypes.LOGIN_REQUEST:
+    return {
+      ...state,
+      isLoading: true
+    }
+  default:
+    return state;
+  }
+};
+
+const keyPair = (state = {
+  publicKey: '',
+  privateKey: null
+}, action) => {
+  const { type } = action;
+
+  if (type === ActionTypes.GENERATE_KEY_PAIR) {
+    let privateKey = generateRSAKey(localStorage.getItem('loginToken').slice(0,30), 1024)
+    
+    return {
+      publicKey: publicKeyString(privateKey),
+      privateKey
+    }
+  }
+
+  return state;
+};
 
 // Updates error message to notify about the failed fetches.
 const errorMessage = (state = null, action) => {
@@ -26,31 +72,13 @@ const errorMessage = (state = null, action) => {
   return state
 }
 
-// Updates the pagination data for different actions.
-const pagination = combineReducers({
-  starredByUser: paginate({
-    mapActionToKey: action => action.login,
-    types: [
-      ActionTypes.STARRED_REQUEST,
-      ActionTypes.STARRED_SUCCESS,
-      ActionTypes.STARRED_FAILURE
-    ]
-  }),
-  stargazersByRepo: paginate({
-    mapActionToKey: action => action.fullName,
-    types: [
-      ActionTypes.STARGAZERS_REQUEST,
-      ActionTypes.STARGAZERS_SUCCESS,
-      ActionTypes.STARGAZERS_FAILURE
-    ]
-  })
-})
 
 const rootReducer = combineReducers({
-  entities,
-  pagination,
+  login,
   errorMessage,
+  keyPair,
   routing
-})
+});
 
-export default rootReducer
+export default rootReducer;
+
