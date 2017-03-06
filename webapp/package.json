@@ -32,6 +32,7 @@
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
     "superagent": "^3.5.0",
+    "truffle-contract": "^1.1.10",
     "web3": "^0.18.2"
   },
   "scripts": {
