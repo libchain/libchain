@@ -4,7 +4,7 @@ const API_ROOT = 'http://localhost:4040/api/';
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-const callApi = (endpoint, payload, verb) => {
+const callApi = (endpoint, authentificate, payload, verb) => {
   const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
   
   let request = requestSa   
@@ -35,7 +35,7 @@ const callApi = (endpoint, payload, verb) => {
                 .set('Accept', 'application/json') 
                 .set('Content-Type', 'application/json; charset=utf-8')
 
-  if (endpoint.indexOf('auth') === -1) {
+  if (authentificate) {
     console.log('AUTH')
 
     request = request.set('Authorization', `Bearer ${localStorage.getItem('loginToken')}`);
@@ -69,7 +69,7 @@ export default store => next => action => {
   }
 
   let { endpoint, payload } = callAPI;
-  const { types, verb } = callAPI;
+  const { types, verb, authentificate } = callAPI;
 
   if (typeof endpoint === 'function') {
     endpoint = endpoint(store.getState());
@@ -96,7 +96,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types;
   next(actionWith({ type: requestType }));
 
-  return callApi(endpoint, payload, verb).then(
+  return callApi(endpoint, authentificate, payload, verb).then(
     response => next(actionWith({
       response,
       type: successType

@@ -72,6 +72,9 @@ const errorMessage = (state = null, action) => {
   return state
 }
 
+/**
+  * Need of pdf reducer?
+  */
 
 const rootReducer = combineReducers({
   login,

@@ -3,14 +3,13 @@ import React, { Component }from 'react';
 import { Form } from 'formsy-react';
 import { FormsyText } from 'formsy-material-ui/lib';
 
-class LogInForm extends Component {
+class EmailPassForm extends Component {
   errorMessages = {
     passwordError: "Please no special characters or spaces",
     emailError: "Please provide a valid email address"
   } 
 
   submitForm = (data) => {
-    alert(JSON.stringify(data, null, 4));
     this.props.submitForm(data)
   }
 
@@ -62,4 +61,4 @@ class LogInForm extends Component {
   }
 }
 
-export default LogInForm;
+export default EmailPassForm;

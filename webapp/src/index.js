@@ -9,10 +9,6 @@ import configureStore from './store/configureStore';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import Web3 from 'web3';
-
-let web3 = new Web3();
-
 const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)
 

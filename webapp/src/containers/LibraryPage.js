@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import FlatButton from 'material-ui/FlatButton';
+import Subheader from 'material-ui/Subheader';
 import {
   Table, 
   TableBody, 
@@ -35,7 +36,18 @@ class LibraryPage extends Component {
   }
 
   renderTableHeader() {
-    const { isLogged } = this.props
+    const { isLogged, isAdmin } = this.props
+    console.log(isAdmin)
+    let adminRow = null
+    if (isAdmin) {
+      adminRow = (
+      <TableRow>
+        <TableHeaderColumn colSpan={isLogged ? "4" : "3"} tooltip="Admin" style={{textAlign: 'center', fontWeight: 400, fontSize: 20}}>
+          Admin
+        </TableHeaderColumn>
+      </TableRow>
+      );
+    }
 
     let headerColumns = (
           <TableRow>
@@ -51,7 +63,8 @@ class LibraryPage extends Component {
           adjustForCheckbox={false}
           displaySelectAll={false}
         >
-            {headerColumns}
+          {adminRow}
+          {headerColumns}
         </TableHeader>
         )       
 
@@ -86,7 +99,7 @@ class LibraryPage extends Component {
   }
 
   render() {
-    return (
+    return (          
         <Table
           fixedHeader={true}
           selectable
@@ -103,9 +116,12 @@ class LibraryPage extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  isLogged: state.login.jwt !== null,
-  ...ownProps
-})
+const mapStateToProps = (state, ownProps) => {
+  console.log(ownProps)
+  return {
+    isLogged: state.login.jwt !== null,
+    ...ownProps
+  }
+}
 
 export default connect(mapStateToProps)(LibraryPage)
