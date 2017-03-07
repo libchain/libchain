@@ -21,4 +21,10 @@ router.route('/lend')
   /** POST /api/users/:userEmail - Pipes lend request to publisher */
   .post(validate(paramValidation.lend), expressJwt({ secret: config.jwtSecret }), userCtrl.processLendRequest)
 
+router.route('/admin/buy')
+  /** Not sure whether this is needed */
+  /** POST /api/users/:userEmail - Pipes lend request to publisher */
+  // update param validation 
+  .post(validate(paramValidation.lend), expressJwt({ secret: config.jwtSecret }), userCtrl.processBuyRequest)
+
 export default router;

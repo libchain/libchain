@@ -36,4 +36,14 @@ function processLendRequest(req, res) {
   })
 }
 
+function processBuyRequest(req, res) {
+  User.get(req.user.email).then((user) => {
+    /* Look if user  has admin rights */
+
+    return contracts.libraryContract.at(/* library contract */).then( (instance) => {
+      return instance.buy(/*book address*/)
+    })
+  })
+}
+
 export default { create, setPublicKey, processLendRequest };
