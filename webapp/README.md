@@ -1,6 +1,5 @@
-# Redux Real World Example
-
-This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
+# LibChain's Webapp
+This project template is based on [redux's real world example](https://github.com/reactjs/redux/tree/master/examples/real-world).
 
 ## Available Scripts
 
