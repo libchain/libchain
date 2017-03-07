@@ -1,5 +1,5 @@
 import User from '../models/user.model';
-
+import contracts from '../helpers/contracts';
 /**
  * Create new user
  * @property {string} req.body.email - The email of user.
@@ -30,10 +30,9 @@ function setPublicKey(req, res, next) {
 
 function processLendRequest(req, res) {
   User.get(req.user.email).then((user) => {
-    /** 
-      * Do some stuff
-      */ 
-    return;
+    return contracts.libraryContract.at(/* library contract */).then( (instance) => {
+      return instance.borrow(/*book address*/)
+    })
   })
 }
 
