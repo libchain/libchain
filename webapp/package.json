@@ -1,0 +1,43 @@
+{
+  "name": "real-world",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0",
+    "react-scripts": "^0.6.0",
+    "redux-devtools": "^3.3.1",
+    "redux-devtools-dock-monitor": "^1.1.1",
+    "redux-devtools-log-monitor": "^1.0.11",
+    "redux-logger": "^2.6.1"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "cryptico": "^1.0.2",
+    "formsy-material-ui": "^0.5.5",
+    "formsy-react": "^0.19.2",
+    "humps": "^1.1.0",
+    "lodash": "^4.16.1",
+    "material-ui": "^0.17.0",
+    "normalizr": "3.0.0",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.6.1",
+    "react-router-redux": "^4.0.5",
+    "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
+    "superagent": "^3.5.0",
+    "truffle-contract": "^1.1.10",
+    "web3": "^0.18.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  }
+}

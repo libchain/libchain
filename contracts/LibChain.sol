@@ -13,14 +13,13 @@ contract Book {
 	function Book(string pub, uint year, string id, string gate) {
   		owner = msg.sender;
 		publisher = 'Springer';
-		year = ;
+		year = 2000;
 		gateway = gate;
 		isbn = id;
   	}
 
-	function buy(address buyer, uint amount) onlyOwner{	
-		balances[buyer] += amount;
-		
+	function buy(address buyer, uint amount) {	
+		balances[buyer] += amount;		
 	}
 
 	function transfer(address receiver, uint amount) returns(bool success){
@@ -43,13 +42,15 @@ contract Publisher{
 	string public name;
 	string public location;
 
+	event PublishBook(address newBook);
+
 	function Publisher(string n, string l){
 		name = n;
 		location = l;	
 	}
 	
 	function publishBook(uint year, string id, string gate) returns(address bookContract){
-		publishedBooks[bookNum] = new Book(this.name, year, id, gate);
+		publishedBooks[bookNum] = new Book(name, year, id, gate);
 		bookNum++;
 		// Event for publishing a book
 		PublishBook(publishedBooks[bookNum-1]);
@@ -76,9 +77,10 @@ contract Library {
 		name = n;
 	}
 
-	function buy(address bookContract, uint amount) {
-		Book book = Book(bookContract);
-		book.buy(amount);
+	function buy(address bookContract, address publisherContract, uint amount) {
+		Publisher pub = Publisher(publisherContract);
+		// Book book = Book(bookContract);
+		pub.buyBook(bookContract, amount);
 		inventory[bookContract] += amount;
 	}
 
@@ -86,7 +88,7 @@ contract Library {
 		if(inventory[bookContract] == 0)return false;
 		Book book = Book(bookContract);
 		if(book.transfer(msg.sender, 1)){
-			inventoryContract[boookContract]--;
+			inventory[bookContract]--;
 			users[msg.sender][bookContract]++;
 			return true;
 		}	
@@ -97,17 +99,20 @@ contract Library {
 
 contract LibChain{
 	
-	mapping(uint => address) public libraries
+	mapping(uint => address) public libraries;
 	uint public libNum;
-	mapping(uint => address) public publishers
+	mapping(uint => address) public publishers;
 	uint public pubNum;
 
 	string public version = '0.1';
 
+	event NewLibrary(address newLib);
+	event NewPublisher(address newPublisher);
+
 	function newLibrary(string name) returns (address libraryContract) {
 		libraries[libNum] = new Library(name);
 		libNum++;
-		NewLibrary(publishedBooks[libNum-1]);
+		NewLibrary(libraries[libNum-1]);
 		return libraries[libNum-1];
 	}
 
