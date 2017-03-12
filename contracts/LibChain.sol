@@ -48,6 +48,14 @@ contract Publisher{
 		name = n;
 		location = l;	
 	}
+
+	function getName() returns(string name) {
+		return name;
+	}
+
+	function getLocation() returns(string name) {
+		return location;
+	}
 	
 	function publishBook(uint year, string id, string gate) returns(address bookContract){
 		publishedBooks[bookNum] = new Book(name, year, id, gate);
@@ -75,6 +83,10 @@ contract Library {
 
 	function Library(string n){
 		name = n;
+	}
+
+	function getName() returns (string) {
+		return name;
 	}
 
 	function buy(address bookContract, address publisherContract, uint amount) {
@@ -121,6 +133,10 @@ contract LibChain{
 		pubNum++;
 		NewPublisher(publishers[pubNum-1]);	
 		return publishers[pubNum-1];
+	}
+
+	function getLibrary(uint number) returns (address) {
+		return libraries[number];
 	}
 
 }
