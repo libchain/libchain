@@ -12,8 +12,8 @@ contract Book {
   
 	function Book(string pub, uint year, string id, string gate) {
   		owner = msg.sender;
-		publisher = 'Springer';
-		year = 2000;
+		publisher = pub;
+		year = year;
 		gateway = gate;
 		isbn = id;
   	}
