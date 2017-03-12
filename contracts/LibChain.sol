@@ -80,8 +80,22 @@ contract Library {
 	mapping(address => mapping(address => uint)) internal users;
 
 	string public name;
+	address public owner;
+
+	modifier onlyOwner(){
+		if (msg.sender != owner)
+            		throw;
+		_;
+	}
+
+	modifier onlyCustomer(){
+		if (users[msg.sender] == 0)
+            		throw;	
+		_;
+	}
 
 	function Library(string n){
+		owner = msg.sender;	
 		name = n;
 	}
 
@@ -89,14 +103,14 @@ contract Library {
 		return name;
 	}
 
-	function buy(address bookContract, address publisherContract, uint amount) {
+	function buy(address bookContract, address publisherContract, uint amount) onlyOwner{
 		Publisher pub = Publisher(publisherContract);
 		// Book book = Book(bookContract);
 		pub.buyBook(bookContract, amount);
 		inventory[bookContract] += amount;
 	}
 
-	function borrow(address bookContract) returns (bool success){
+	function borrow(address bookContract) returns (bool success) onlyCustomer{
 		if(inventory[bookContract] == 0)return false;
 		Book book = Book(bookContract);
 		if(book.transfer(msg.sender, 1)){
@@ -135,7 +149,7 @@ contract LibChain{
 		return publishers[pubNum-1];
 	}
 
-	function getLibrary(uint number) returns (address) {
+	function getLibrary(uint number) returns (address libraryC) {
 		return libraries[number];
 	}
 
