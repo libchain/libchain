@@ -30,9 +30,9 @@ function setPublicKey(req, res, next) {
 
 function processLendRequest(req, res) {
   User.get(req.user.email).then((user) => {
-    return contracts.libraryContract.at(/* library contract */).then( (instance) => {
-      return instance.borrow(/*book address*/)
-    })
+    // return contracts.libraryContract.at(/* library contract */).then( (instance) => {
+    //   return instance.borrow(/*book address*/)
+    // })
   })
 }
 
@@ -40,10 +40,10 @@ function processBuyRequest(req, res) {
   User.get(req.user.email).then((user) => {
     /* Look if user  has admin rights */
 
-    return contracts.libraryContract.at(/* library contract */).then( (instance) => {
-      return instance.buy(/*book address*/)
-    })
+    // return contracts.libraryContract.at(/* library contract */).then( (instance) => {
+    //   return instance.buy(/*book address*/)
+    // })
   })
 }
 
-export default { create, setPublicKey, processLendRequest };
+export default { create, setPublicKey, processLendRequest, processBuyRequest };

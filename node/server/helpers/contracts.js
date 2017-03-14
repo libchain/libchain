@@ -1,10 +1,10 @@
 import Web3 from 'web3';
 import contract from 'truffle-contract';
 
-import LibChainContractSchema from '../../../build/contracts/LibChain';
-import PublisherContractSchema from '../../../build/contracts/Publisher';
-import LibraryContractSchema from '../../../build/contracts/Library';
-import BookContractSchema from '../../../build/contracts/Book';
+import LibChainContractSchema from '../../contracts/LibChain';
+import PublisherContractSchema from '../../contracts/Publisher';
+import LibraryContractSchema from '../../contracts/Library';
+import BookContractSchema from '../../contracts/Book';
 
 const web3 = new Web3();
 web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545')) // GET ME FROM ENV FILE
