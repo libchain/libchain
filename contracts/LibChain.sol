@@ -2,46 +2,46 @@ pragma solidity ^0.4.4;
 
 contract Book {
 
-	address public owner;
-	string public publisher;
-	int public year;
-	string public gateway;
-	string public isbn;
+	address public _owner;
+	string public _publisher;
+	uint public _year;
+	string public _gateway;
+	string public _isbn;
 	
-	mapping (address => uint) public balances;
+	mapping (address => uint) public _balances;
   
 	function Book(string pub, uint year, string id, string gate) {
-  		owner = msg.sender;
-		publisher = pub;
-		year = year;
-		gateway = gate;
-		isbn = id;
+  		_owner = msg.sender;
+		_publisher = pub;
+		_year = year;
+		_gateway = gate;
+		_isbn = id;
   	}
 
-  	function getPublisher() returns (string publisher){
-       return publisher;
+  	function getPublisher() returns (string){
+       return _publisher;
   	}
 
-  	function getYear() returns (uint year){
-  	    return year;
+  	function getYear() returns (uint){
+  	    return _year;
   	 }
 
-  	 function getGateway() returns (string gateway){
-  	    return gateway;
+  	 function getGateway() returns (string){
+  	    return _gateway;
   	 }
 
-  	 function getIsbn() returns (string isbn){
-  	    return isbn;
+  	 function getIsbn() returns (string){
+  	    return _isbn;
   	 }
 
-	function buy(address buyer, uint amount) {	
-		balances[buyer] += amount;		
+	function buy(address buyer, uint amount) {
+		_balances[buyer] += amount;
 	}
 
-	function transfer(address receiver, uint amount) returns(bool success){
-		if(balances[msg.sender] >= amount){
-			balances[msg.sender] -= amount;
-			balances[receiver] += amount;
+	function transfer(address receiver, uint amount) returns(bool){
+		if(_balances[msg.sender] >= amount){
+			_balances[msg.sender] -= amount;
+			_balances[receiver] += amount;
 			return true;
 		}
 		return false;
@@ -62,14 +62,14 @@ contract Publisher{
 
 	function Publisher(string n, string l){
 		name = n;
-		location = l;	
+		location = l;
 	}
 
-	function getName() returns(string name) {
-		return name;
+	function getName() returns(string) {
+        return name;
 	}
 
-	function getLocation() returns(string name) {
+	function getLocation() returns(string) {
 		return location;
 	}
 	
@@ -151,21 +151,21 @@ contract LibChain{
 	event NewLibrary(address newLib);
 	event NewPublisher(address newPublisher);
 
-	function newLibrary(string name) returns (address libraryContract) {
+	function newLibrary(string name) returns (address) {
 		libraries[libNum] = new Library(name);
 		libNum++;
 		NewLibrary(libraries[libNum-1]);
 		return libraries[libNum-1];
 	}
 
-	function newPublisher(string name, string location) returns (address publisherContract) {
+	function newPublisher(string name, string location) returns (address) {
 		publishers[pubNum] = new Publisher(name, location);
 		pubNum++;
 		NewPublisher(publishers[pubNum-1]);	
 		return publishers[pubNum-1];
 	}
 
-	function getLibrary(uint number) returns (address libraryC) {
+	function getLibrary(uint number) returns (address) {
 		return libraries[number];
 	}
 
