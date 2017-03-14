@@ -18,6 +18,22 @@ contract Book {
 		isbn = id;
   	}
 
+  	function getPublisher() returns (string publisher){
+       return publisher;
+  	}
+
+  	function getYear() returns (uint year){
+  	    return year;
+  	 }
+
+  	 function getGateway() returns (string gateway){
+  	    return gateway;
+  	 }
+
+  	 function getIsbn() returns (string isbn){
+  	    return isbn;
+  	 }
+
 	function buy(address buyer, uint amount) {	
 		balances[buyer] += amount;		
 	}
@@ -89,7 +105,7 @@ contract Library {
 	}
 
 	modifier onlyCustomer(){
-		if (users[msg.sender] == 0)
+		if (users[msg.sender][0] == 0)
             		throw;	
 		_;
 	}
@@ -110,7 +126,7 @@ contract Library {
 		inventory[bookContract] += amount;
 	}
 
-	function borrow(address bookContract) returns (bool success) onlyCustomer{
+	function borrow(address bookContract) onlyCustomer returns (bool success) {
 		if(inventory[bookContract] == 0)return false;
 		Book book = Book(bookContract);
 		if(book.transfer(msg.sender, 1)){
