@@ -14,7 +14,7 @@ const paths = {
 
 // Clean up dist and coverage directory
 gulp.task('clean', () =>
-  del.sync(['dist/**', 'dist/.*', 'coverage/**', '../build/**', '!dist', '!coverage'])
+  del.sync(['dist/**', 'dist/.*', 'coverage/**', '../build/**', '!dist', '!coverage'], {force: true})
 );
 
 // Copy non-js files to dist
