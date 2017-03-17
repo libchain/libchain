@@ -87,6 +87,9 @@ contract Publisher{
 		bills[msg.sender][bookContract] += amount;
 	}
 
+	function getBook(uint num) returns (address) {
+        return publishedBooks[num];
+	}
 }
 
 
@@ -169,4 +172,15 @@ contract LibChain{
 		return libraries[number];
 	}
 
+	function getPublisher(uint number) returns(address) {
+	    return publishers[number];
+	}
+
+	function getNumPublisher() returns (uint) {
+	    return pubNum;
+	}
+
+	function getNumLibraries() returns (uint) {
+	    return libNum;
+	}
 }
