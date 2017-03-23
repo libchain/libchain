@@ -48,11 +48,17 @@ module.exports = function (callback) {
             inst.publishBook(2007, "Write Yourself a Scheme in 48 Hours", "https://upload.wikimedia.org/wikipedia/commons/a/aa/Write_Yourself_a_Scheme_in_48_Hours.pdf")
         });
 
-
-    // create a library
     LibChain.deployed().then(function (inst) {
-        // create a libraries
-        inst.newLibrary("TU-Berlin");
-        inst.newLibrary("HU-Berlin");
+        // create some libraries
+        inst.newLibrary("TU-Berlin").then(contract => {
+            console.log("created library TU-Berlin with address: " + contract.logs[0].args['newLib']);
+        }) ;
+        inst.newLibrary("HU-Berlin").then(contract => {
+            console.log("created library HU-Berlin with address: " + contract.logs[0].args['newLib']);
+        }) ;
+    });
+
+    LibChain.deployed().then(function (inst){
+        console.log("LibChain address: " + inst.address);
     });
 };
