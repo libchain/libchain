@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import util from 'util';
+import bookCtrl from './server/controllers/book.controller'
+import contracts from './server/helpers/contracts';
 
 // config should be imported before importing any other file
 import config from './config/config';
@@ -26,6 +28,19 @@ if (config.MONGOOSE_DEBUG) {
     debug(`${collectionName}.${method}`, util.inspect(query, false, 20), doc);
   });
 }
+
+var libChainInstance;
+var libAddress;
+
+contracts.libChainContract.deployed().then((instance) => {
+    libChainInstance = instance;
+    return libChainInstance.newLibrary("CIT", { from: contracts.web3.eth.accounts[0], gas: 4712387 }) //change default of contract's from
+  })
+  .then((transactionReceipt) => {
+    libAddress = transactionReceipt.logs[0].args['newLibrary'];
+  })
+
+export { libAddress, libChainInstance };
 
 // module.parent check is required to support mocha watch
 // src: https://github.com/mochajs/mocha/issues/1912

@@ -11,28 +11,32 @@ contract Book {
 	mapping (address => uint) public _balances;
   
 	function Book(string pub, uint year, string id, string gate) {
-  		_owner = msg.sender;
+  	_owner = msg.sender;
 		_publisher = pub;
 		_year = year;
 		_gateway = gate;
 		_isbn = id;
-  	}
+	}
 
-  	function getPublisher() returns (string){
-       return _publisher;
-  	}
+	function getPublisher() returns (string) {
+    return _publisher;
+	}
 
-  	function getYear() returns (uint){
-  	    return _year;
-  	 }
+	function getYear() returns (uint) {
+		return _year;
+	 }
 
-  	 function getGateway() returns (string){
-  	    return _gateway;
-  	 }
+	 function getGateway() returns (string) {
+	 	return _gateway;
+	 }
 
-  	 function getIsbn() returns (string){
-  	    return _isbn;
-  	 }
+	 function getIsbn() returns (string) {
+	  return _isbn;
+	 }
+
+	 function getBookInfo() returns (uint, string, string, string, address, address) {
+	 	return (_year, _isbn, _gateway, _publisher, _owner, this);
+	 }
 
 	function buy(address buyer, uint amount) {
 		_balances[buyer] += amount;
@@ -52,7 +56,7 @@ contract Book {
 
 contract Publisher{
 
-	mapping(uint => Book) public publishedBooks;
+	Book[] publishedBooks;
 	mapping(address => mapping(address => uint)) public bills;
 	uint public bookNum;
 	string public name;
@@ -74,7 +78,7 @@ contract Publisher{
 	}
 	
 	function publishBook(uint year, string id, string gate) returns(address bookContract){
-		publishedBooks[bookNum] = new Book(name, year, id, gate);
+		publishedBooks.push(new Book(name, year, id, gate));
 		bookNum++;
 		// Event for publishing a book
 		PublishBook(publishedBooks[bookNum-1]);
@@ -87,8 +91,12 @@ contract Publisher{
 		bills[msg.sender][bookContract] += amount;
 	}
 
+	function getBooks() returns (Book[]) {
+		return publishedBooks;
+	}
+
 	function getBook(uint num) returns (address) {
-        return publishedBooks[num];
+    return publishedBooks[num];
 	}
 }
 
@@ -96,26 +104,34 @@ contract Publisher{
 contract Library {
 
 	mapping(address => uint) public inventory;
+	Book[] libBooks;
 	mapping(address => mapping(address => uint)) internal users;
 
 	string public name;
 	address public owner;
 
 	modifier onlyOwner(){
-		if (msg.sender != owner)
-            		throw;
+		if (msg.sender != owner) {
+			throw;
+		}
 		_;
 	}
 
 	modifier onlyCustomer(){
-		if (users[msg.sender][0] == 0)
-            		throw;	
+		if (users[msg.sender][0] == 0) {
+      throw;	
+		}
+
 		_;
 	}
 
 	function Library(string n){
 		owner = msg.sender;	
 		name = n;
+	}
+
+	function getBooks() returns (Book[]) {
+		return libBooks;
 	}
 
 	function getName() returns (string) {
@@ -127,6 +143,8 @@ contract Library {
 		// Book book = Book(bookContract);
 		pub.buyBook(bookContract, amount);
 		inventory[bookContract] += amount;
+		Book libBook = Book(bookContract);
+		libBooks.push(libBook);
 	}
 
 	function borrow(address bookContract) onlyCustomer returns (bool success) {
@@ -151,7 +169,7 @@ contract LibChain{
 
 	string public version = '0.1';
 
-	event NewLibrary(address newLib);
+	event NewLibrary(address newLibrary);
 	event NewPublisher(address newPublisher);
 
 	function newLibrary(string name) returns (address) {
@@ -176,11 +194,11 @@ contract LibChain{
 	    return publishers[number];
 	}
 
-	function getNumPublisher() returns (uint) {
+	function getNumPublisher() returns (uint c) {
 	    return pubNum;
 	}
 
-	function getNumLibraries() returns (uint) {
+	function getNumLibraries() returns (uint c) {
 	    return libNum;
 	}
 }

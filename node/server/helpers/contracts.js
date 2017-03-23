@@ -8,7 +8,7 @@ import BookContractSchema from '../../contracts/Book';
 
 const web3 = new Web3();
 web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545')) // GET ME FROM ENV FILE
-
+web3.eth.defaultAccount = web3.eth.accounts[0]
 const libChainContract = contract(LibChainContractSchema);
 const libraryContract = contract(LibraryContractSchema);
 const publisherContract = contract(PublisherContractSchema);

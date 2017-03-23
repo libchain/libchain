@@ -1,12 +1,13 @@
 import contracts from '../helpers/contracts';
 
+var libchainInstance;
 
 function getLibBooks(req, res) {
   let library;
   var books = [];
   contracts.libraryContract.at(/* library address */).then((libraryInstance) => {
     // needs to get the library instance to run through its inventory
-    return Object.keys(libraryInstance.inventory.call()).map((bookAddress) => {
+    return Object.keys(libraryInstance.libBooks.call()).map((bookAddress) => {
       // maps all the address with the books itselves
       contracts.bookContract.at(bookAddress).then((bookInstance) => {
         books.push(bookInstance)
@@ -29,72 +30,108 @@ function getPubBooks(req, res) {
         books.push(bookInstance)
       })
     })
-      .then((result) => {
-        // return here the books as json with res.json(books)
-      })
+    .then((result) => {
+      // return here the books as json with res.json(books)
+    })
   })
 }
 
 function getAllPubBooks(req, res) {
-  var publisher = getAllPublisherAdresses();
+  var publishers = getAllPublishers();
   var books = [];
 
-  publisher.map(address =>
-    (getPubBooks(address)).then(
-      returnedBooks => (books.push(returnedBooks)))
-      .then( () => {return books;}
-  ));
+  Promise.all(publishers).then((publisherInstances) => {
+    return Promise.map(publisherInstances, (publisherInstance => {
+        return publisherInstance.getBooks.call()  
+      }))
+  })
+  .then((publisherBookAddresses) => {
+    console.log('before', publisherBookAddresses)
+    return Promise.reduce(publisherBookAddresses, (joinedBookAddresses, bookAddressesFromPublisher) => {
+        bookAddressesFromPublisher.forEach((bookAddress) => {
+          joinedBookAddresses.push(bookAddress)
+        })
+
+        return joinedBookAddresses;
+      }, [])
+  })
+  .then((allBookAddresses) => {
+    return Promise.map(allBookAddresses, (bookAddress) => {
+      return contracts.bookContract.at(bookAddress)
+    })
+  })
+  .then((bookInstances) => {
+    return Promise.all(bookInstances)
+  })
+  .then((bookInstances) => {
+    return Promise.map(bookInstances, (bookInstance) => {
+      return bookInstance.getBookInfo.call()
+    })
+  })
+  .then((bookInfos) => {
+    return Promise.all(bookInfos)
+  })
+  .then((result) => {
+    result.forEach(book => {
+      books.push({
+        year: book[0].c[0],
+        name: book[1],
+        url: book[2],
+        publisherName: book[3],
+        publisherAddress: book[4],
+        bookAddress: book[5]
+      })
+    })
+  })
+  .then((book) => {
+    res.json(books)
+  })
 }
 
 
 /** helper functions */
 
 
-function getAllPublisher(){
-  var publisher = getAllPublisherAdresses();
-  publisher.map( address =>
-    contracts.publisherContract.at(address).get());
-  return publisher;
+function getAllPublishers(){
+  var publishers = getAllPublisherAddresses();
+  console.log(publishers)
+  return Promise.map(publishers, (publisherAddresses) => 
+    contracts.publisherContract.at(publisherAddresses)
+  )
 }
 
 
-function getAllPublisherAdresses() {
-  var publisherAdresses = [];
-  var numPub = getNumberOfPublisher().get();
+function getAllPublisherAddresses() {
+  var publisherAddresses = [];
 
-  for (i = 0; i < numPub; i++) {
-    publisherAdresses.push(contracts
-      .libChainContract
-      .getPublisher
-      .call(i))
-      .get(); //TODO: get() is misplaced here.
-              // Is it possible to do this asynchronous and
-              // block the array promise afterwards???
-  }
+  return getNumberOfPublishers().then(function (numberOfBooks) {
+    let numBook = numberOfBooks.c[0]
+    console.log(numBook, typeof numBook)
+    for (var i = 0; i < numBook; i++) {
+      publisherAddresses.push(Promise.resolve(libchainInstance.getPublisher.call(i)).then(function (address) {
+          return address
+        })
+      )
+    }
 
-  return publisherAdresses;
+    return publisherAddresses
+  })
+  .catch(function (error) { console.err('error: ', error) });
+
 }
 
-function getNumberOfPublisher() {
-  contracts.libChainContract.deployed().then((libchainInstance) => {
+function getNumberOfPublishers() {
+  return getLibChainInstance().then((lcInstance) => {
+    libchainInstance = lcInstance
     return libchainInstance.getNumPublisher.call();
-  });
+  })
+  .catch(function (error) { console.err('error: ', error) });
 }
 
 
-// contracts.publisherContract.at(/* publisher address */).then((publisherInstance) => {
-//   // needs to get the publisher instance to run through its published Books
-//   return Object.keys(publisherInstance.publishedBooks.call()).map((bookAddress) => {
-//     // maps all the address with the books itselves
-//     contracts.bookContract.at(bookAddress).then((bookInstance) => {
-//       books.push(bookInstance)
-//     })
-//   })
-//     .then((result) => {
-//       // return here the books as json with res.json(books)
-//     })
-// })
-//}
+function getLibChainInstance() {
+  return contracts.libChainContract.deployed();
+}
 
 
-export default {getLibBooks, getPubBooks, getAllPubBooks};
+export default {getLibBooks, getPubBooks, getAllPubBooks, getAllPublisherAddresses};

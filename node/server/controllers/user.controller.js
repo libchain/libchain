@@ -1,5 +1,7 @@
 import User from '../models/user.model';
+import { libAddress } from '../../index';
 import contracts from '../helpers/contracts';
+
 /**
  * Create new user
  * @property {string} req.body.email - The email of user.
@@ -39,10 +41,13 @@ function processLendRequest(req, res) {
 function processBuyRequest(req, res) {
   User.get(req.user.email).then((user) => {
     /* Look if user  has admin rights */
+    if (!user.admin) {
+      res.status(401).send('You need to be admin for this')
+    }
 
-    // return contracts.libraryContract.at(/* library contract */).then( (instance) => {
-    //   return instance.buy(/*book address*/)
-    // })
+    return contracts.libraryContract.at(libAddress).then( (instance) => {
+      return instance.buy(req.bookAddress, req.publisherAddress, 1, { from: libAddress, gas: 4712387 })
+    })
   })
 }
 

@@ -11,6 +11,6 @@ router.route('/')
 
 router.route('/admin')
   /** GET /api/books/admin - Fetches publisher books  */
-  .get(bookCtrl.getPubBooks)
+  .get(bookCtrl.getAllPubBooks)
 
 export default router;
