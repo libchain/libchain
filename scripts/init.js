@@ -65,8 +65,6 @@ module.exports = function (callback) {
         console.log(result)
     });
 
-
-    // create a library
     LibChain.deployed().then(function (inst) {
         // create a libraries
         inst.newLibrary("TU-Berlin");
