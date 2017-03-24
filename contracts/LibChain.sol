@@ -24,19 +24,20 @@ contract Book {
 
 	function getYear() returns (uint) {
 		return _year;
-	 }
+	}
 
-	 function getGateway() returns (string) {
+	function getGateway() returns (string) {
 	 	return _gateway;
-	 }
+	}
 
-	 function getIsbn() returns (string) {
+	function getIsbn() returns (string) {
 	  return _isbn;
-	 }
+	}
 
-	 function getBookInfo() returns (uint, string, string, string, address, address) {
-	 	return (_year, _isbn, _gateway, _publisher, _owner, this);
-	 }
+	function getBookInfo() returns (uint, string, string, string, uint, address, address) {
+	 	return (_year, _isbn, _gateway, _publisher, _balances[msg.sender], _owner, this);
+	}
+
 
 	function buy(address buyer, uint amount) {
 		_balances[buyer] += amount;
@@ -102,8 +103,12 @@ contract Publisher{
 
 
 contract Library {
-
-	mapping(address => uint) public inventory;
+	// book address to array of users' public keys
+	/* struct Inventory {
+		address bookAddress;
+		bytes 
+	} */
+	mapping(address => byte[][]) public inventory;
 	Book[] libBooks;
 	mapping(address => mapping(address => uint)) internal users;
 
@@ -142,16 +147,22 @@ contract Library {
 		Publisher pub = Publisher(publisherContract);
 		// Book book = Book(bookContract);
 		pub.buyBook(bookContract, amount);
-		inventory[bookContract] += amount;
+		inventory[bookContract].length = inventory[bookContract].length + amount;
 		Book libBook = Book(bookContract);
 		libBooks.push(libBook);
 	}
 
-	function borrow(address bookContract) onlyCustomer returns (bool success) {
-		if(inventory[bookContract] == 0)return false;
+	function borrow(address bookContract, bytes1[] publicKey) onlyCustomer returns (bool success) {
+		if(inventory[bookContract].length == 0)return false;
 		Book book = Book(bookContract);
 		if(book.transfer(msg.sender, 1)){
-			inventory[bookContract]--;
+			for (var i = 0; i < inventory[bookContract].length; i++) {
+				if (inventory[bookContract][i].length == 0) {
+					//TODO: check if it works
+					inventory[bookContract][i] = publicKey;
+					break;
+				}
+			}
 			users[msg.sender][bookContract]++;
 			return true;
 		}	
