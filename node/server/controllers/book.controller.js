@@ -19,23 +19,6 @@ function getLibBooks(req, res) {
   })
 }
 
-function getPubBooks(req, res) {
-  let library;
-  var books = [];
-  contracts.publisherContract.at(/* publisher address */).then((publisherInstance) => {
-    // needs to get the publisher instance to run through its published Books
-    return Object.keys(publisherInstance.publishedBooks.call()).map((bookAddress) => {
-      // maps all the address with the books itselves
-      contracts.bookContract.at(bookAddress).then((bookInstance) => {
-        books.push(bookInstance)
-      })
-    })
-    .then((result) => {
-      // return here the books as json with res.json(books)
-    })
-  })
-}
-
 function getAllPubBooks(req, res) {
   var publishers = getAllPublishers();
   var books = [];
@@ -134,4 +117,4 @@ function getLibChainInstance() {
 }
 
 
-export default {getLibBooks, getPubBooks, getAllPubBooks, getAllPublisherAddresses};
+export default {getLibBooks, getAllPubBooks, getAllPublisherAddresses};

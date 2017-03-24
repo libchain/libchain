@@ -59,6 +59,21 @@ const keyPair = (state = {
   return state;
 };
 
+const books = (state = [], action) => {
+  const { type } = action;
+
+  switch(type) {
+  case ActionTypes.FETCH_BOOKS_SUCCESS:
+    return [
+      ...action.response
+    ]/*
+  case ActionTypes.FETCH_BOOKS_FAILURE:*/
+  default:
+    return state;
+
+  }
+}
+
 // Updates error message to notify about the failed fetches.
 const errorMessage = (state = null, action) => {
   const { type, error } = action
@@ -80,6 +95,7 @@ const rootReducer = combineReducers({
   login,
   errorMessage,
   keyPair,
+  books,
   routing
 });
 

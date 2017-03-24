@@ -12,19 +12,11 @@ import {
   TableRowColumn
 } from 'material-ui/Table';
 
+import { requestBooks } from '../actions';
+
 class LibraryPage extends Component {
   static propTypes = {
     isLogged: PropTypes.bool
-  }
-
-  state = {
-    books: [
-      {id: '23dfas23sf253gdf6', name: 'From the stars', status: 'booked out'},
-      {id: '6673dfg2dfgyjkbnv', name: 'The elements of style', status: 'available'},
-      {id: 'hfgj88erf3df43gfe', name: 'The design of everyday things', status: 'available'},
-      {id: 'qwe536fg35nbvb455', name: 'Thinking fast and slow', status: 'booked out'},
-      {id: 'cv2346283sjjsdf32', name: 'The psychoanalist', status: 'available'}
-    ]
   }
 
   constructor(props) {
@@ -32,7 +24,7 @@ class LibraryPage extends Component {
   }
 
   componentDidMount() {
-    /* fetch books */ 
+    this.props.requestBooks(this.props.isAdmin)
   }
 
   renderTableHeader() {
@@ -53,8 +45,9 @@ class LibraryPage extends Component {
           <TableRow>
             <TableHeaderColumn>Book ID</TableHeaderColumn>
             <TableHeaderColumn>Name</TableHeaderColumn>
-            <TableHeaderColumn>Status</TableHeaderColumn>
-            { isLogged ? <TableHeaderColumn></TableHeaderColumn> : <div style={{display: 'none'}}></div>}
+            { isAdmin ? <TableHeaderColumn>Publisher</TableHeaderColumn> : <TableHeaderColumn>Status</TableHeaderColumn> }
+            { isAdmin ? <TableHeaderColumn>In Store</TableHeaderColumn> : <div></div> }
+            { isLogged ? <TableHeaderColumn>Actions</TableHeaderColumn> : <div style={{display: 'none'}}></div>}
           </TableRow>
             )
 
@@ -72,8 +65,7 @@ class LibraryPage extends Component {
   }
 
   renderTableRows() {
-    const { books } = this.state
-    const { isLogged, isAdmin } = this.props
+    const { isLogged, isAdmin, books } = this.props
 
     return books.map( (book, index) => {
       let button = isLogged ? ( 
@@ -84,7 +76,7 @@ class LibraryPage extends Component {
       return (
         <TableRow key={index}>
           <TableRowColumn>
-            {'#'+book.id.slice(0, 4)}
+            {'#'+book.bookAddress.slice(0, 4)}
           </TableRowColumn>
           <TableRowColumn>
             {book.name}
@@ -119,9 +111,16 @@ class LibraryPage extends Component {
 const mapStateToProps = (state, ownProps) => {
   console.log(ownProps)
   return {
+    books: state.books,
     isLogged: state.login.jwt !== null,
     ...ownProps
   }
 }
+/*
+const mapDispatchToProps = (dispatch) => {
+  return {
+    requestBooks
+  }
+}*/
 
-export default connect(mapStateToProps)(LibraryPage)
+export default connect(mapStateToProps, { requestBooks })(LibraryPage)

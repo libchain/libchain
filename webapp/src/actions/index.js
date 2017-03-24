@@ -77,6 +77,22 @@ const sendPublicKey = (publicKey) => ({
   }
 });
 
+export const FETCH_BOOKS_REQUEST = 'FETCH_BOOKS_REQUEST';
+export const FETCH_BOOKS_SUCCESS = 'FETCH_BOOKS_SUCCESS';
+export const FETCH_BOOKS_FAILURE = 'FETCH_BOOKS_FAILURE';
+
+const fetchBooks = (fromAdmin) => ({
+  [CALL_API]: {
+    types: [ FETCH_BOOKS_REQUEST, FETCH_BOOKS_SUCCESS, FETCH_BOOKS_FAILURE ],
+    verb: 'GET',
+    endpoint: 'books/' + (fromAdmin ? '/admin' : '')
+  }
+})
+
+export const requestBooks = (fromAdmin) => (dispatch) => {
+  return dispatch(fetchBooks(fromAdmin))
+}
+
 export const publicKey = () => (dispatch, getState) => {
   return dispatch(sendPublicKey({ publicKey: getState().keyPair.publicKey }));
 };
