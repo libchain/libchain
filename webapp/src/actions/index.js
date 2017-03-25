@@ -85,13 +85,37 @@ const fetchBooks = (fromAdmin) => ({
   [CALL_API]: {
     types: [ FETCH_BOOKS_REQUEST, FETCH_BOOKS_SUCCESS, FETCH_BOOKS_FAILURE ],
     verb: 'GET',
-    endpoint: 'books/' + (fromAdmin ? '/admin' : '')
+    endpoint: 'books/' + (fromAdmin ? 'admin' : '')
   }
-})
+});
 
 export const requestBooks = (fromAdmin) => (dispatch) => {
-  return dispatch(fetchBooks(fromAdmin))
-}
+  return dispatch(fetchBooks(fromAdmin));
+};
+export const BUY_OR_LEND_REQUEST = 'BUY_OR_LEND_REQUEST';
+export const BUY_OR_LEND_SUCCESS = 'BUY_OR_LEND_SUCCESS';
+export const BUY_OR_LEND_FAILURE = 'BUY_OR_LEND_FAILURE';
+
+const sendBuyOrLendRequest = (bookAddress, publisherAddress) => ({
+  [CALL_API]: {
+    types: [ BUY_OR_LEND_REQUEST, BUY_OR_LEND_SUCCESS, BUY_OR_LEND_FAILURE ],
+    verb: 'POST',
+    endpoint: 'users/' + (publisherAddress !== undefined ? 'admin/buy' : 'lend'),
+    authentificate: true,
+    payload: {
+      bookAddress,
+      publisherAddress
+    }
+  }
+});
+
+export const buyBook = (bookAddress, publisherAddress) => (dispatch) => {
+  return dispatch(sendBuyOrLendRequest(bookAddress, publisherAddress));
+};
+
+export const lendBook = (bookAddress) => (dispatch) => {
+  return dispatch(sendBuyOrLendRequest(bookAddress));
+};
 
 export const publicKey = () => (dispatch, getState) => {
   return dispatch(sendPublicKey({ publicKey: getState().keyPair.publicKey }));

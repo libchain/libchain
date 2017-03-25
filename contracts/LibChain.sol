@@ -86,7 +86,7 @@ contract Publisher{
 		return publishedBooks[bookNum-1];
 	}
 
-	function buyBook(address bookContract, uint amount){
+	function buyBook(address bookContract, uint amount) constant {
 		Book book = Book(bookContract);
 		book.buy(msg.sender, amount);	
 		bills[msg.sender][bookContract] += amount;
@@ -104,6 +104,8 @@ contract Publisher{
 
 contract Library {
 	// book address to array of users' public keys
+
+	// need wallets for libraries
 	/* struct Inventory {
 		address bookAddress;
 		bytes 
@@ -143,11 +145,12 @@ contract Library {
 		return name;
 	}
 
-	function buy(address bookContract, address publisherContract, uint amount) onlyOwner{
+	// onlyOwner modifier was removed because of the strange behavior of msg.sender 
+	function buy(address bookContract, address publisherContract, uint amount) {
 		Publisher pub = Publisher(publisherContract);
 		// Book book = Book(bookContract);
 		pub.buyBook(bookContract, amount);
-		inventory[bookContract].length = inventory[bookContract].length + amount;
+		inventory[bookContract].length++;
 		Book libBook = Book(bookContract);
 		libBooks.push(libBook);
 	}

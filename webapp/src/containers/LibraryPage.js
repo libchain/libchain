@@ -12,7 +12,7 @@ import {
   TableRowColumn
 } from 'material-ui/Table';
 
-import { requestBooks } from '../actions';
+import { requestBooks, buyBook, lendBook } from '../actions';
 
 class LibraryPage extends Component {
   static propTypes = {
@@ -20,11 +20,32 @@ class LibraryPage extends Component {
   }
 
   constructor(props) {
-    super(props)
+    super(props);
   }
 
   componentDidMount() {
     this.props.requestBooks(this.props.isAdmin)
+  }
+
+  handleAction(bookAddress, publisherAddress) {
+    const { isAdmin } = this.props
+    if (isAdmin) {
+      this.props.buyBook(bookAddress, publisherAddress);
+
+      return;
+    }
+
+    this.props.lendBook(bookAddress);
+  }
+
+  getTableColumnsNumber() {
+    const { isLogged, isAdmin } = this.props
+    let base = 0;
+    if (isAdmin) {
+      return (4 + (isLogged ? 1 : 0));
+    }
+
+    return (3 + (isLogged ? 1 : 0));
   }
 
   renderTableHeader() {
@@ -34,7 +55,7 @@ class LibraryPage extends Component {
     if (isAdmin) {
       adminRow = (
       <TableRow>
-        <TableHeaderColumn colSpan={isLogged ? "4" : "3"} tooltip="Admin" style={{textAlign: 'center', fontWeight: 400, fontSize: 20}}>
+        <TableHeaderColumn colSpan={this.getTableColumnsNumber()} tooltip="Admin" style={{textAlign: 'center', fontWeight: 400, fontSize: 20}}>
           Admin
         </TableHeaderColumn>
       </TableRow>
@@ -70,20 +91,31 @@ class LibraryPage extends Component {
     return books.map( (book, index) => {
       let button = isLogged ? ( 
         <TableRowColumn>
-          <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} />
+          <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} onClick={this.handleAction.bind(this, book.bookAddress, book.publisherAddress)}/> 
         </TableRowColumn>) :
         <div style={{display: 'none'}}></div>
       return (
         <TableRow key={index}>
           <TableRowColumn>
-            {'#'+book.bookAddress.slice(0, 4)}
+            {'#'+book.bookAddress.slice(0, 6)}
           </TableRowColumn>
           <TableRowColumn>
             {book.name}
           </TableRowColumn>
-          <TableRowColumn>
-            {book.status}
-          </TableRowColumn>
+          { isAdmin ?
+              <TableRowColumn>
+                {book.publisherName}
+              </TableRowColumn> :
+              <TableRowColumn>
+                {book.status}
+              </TableRowColumn>
+          }
+          { isAdmin ? 
+            <TableRowColumn>
+              {book.libraryBalance}
+            </TableRowColumn> :
+            <div></div>
+          }
           {button}
         </TableRow>
         )
@@ -123,4 +155,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }*/
 
-export default connect(mapStateToProps, { requestBooks })(LibraryPage)
+export default connect(mapStateToProps, { requestBooks, lendBook, buyBook })(LibraryPage)

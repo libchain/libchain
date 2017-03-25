@@ -46,7 +46,11 @@ function processBuyRequest(req, res) {
     }*/
 
     return contracts.libraryContract.at(libAddress).then( (instance) => {
-      return instance.buy(req.bookAddress, req.publisherAddress, 1, { from: libAddress, gas: 4712387 })
+      return instance.buy(req.body.bookAddress, req.body.publisherAddress, 1, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
+    })
+    .then((transactionReceipt) => {
+      console.log(transactionReceipt.logs)
+      return res.json('ok')
     })
 
   })

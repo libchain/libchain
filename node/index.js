@@ -34,7 +34,7 @@ var libAddress;
 
 contracts.libChainContract.deployed().then((instance) => {
     libChainInstance = instance;
-    return libChainInstance.newLibrary("CIT", { from: contracts.web3.eth.accounts[0], gas: 4712387 }) //change default of contract's from
+    return libChainInstance.newLibrary("CIT", { from: contracts.web3.eth.accounts[0], gas: 1000000 }) //change default of contract's from
   })
   .then((transactionReceipt) => {
     libAddress = transactionReceipt.logs[0].args['newLibrary'];

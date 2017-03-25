@@ -61,8 +61,9 @@ function getAllPubBooks(req, res) {
         name: book[1],
         url: book[2],
         publisherName: book[3],
-        publisherAddress: book[4],
-        bookAddress: book[5]
+        libraryBalance: book[4],
+        publisherAddress: book[5],
+        bookAddress: book[6]
       })
     })
   })

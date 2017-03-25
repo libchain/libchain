@@ -25,6 +25,6 @@ router.route('/admin/buy')
   /** Not sure whether this is needed */
   /** POST /api/users/:userEmail - Pipes lend request to publisher */
   // update param validation 
-  .post(validate(paramValidation.lend), expressJwt({ secret: config.jwtSecret }), userCtrl.processBuyRequest)
+  .post(validate(paramValidation.buy), expressJwt({ secret: config.jwtSecret }), userCtrl.processBuyRequest)
 
 export default router;

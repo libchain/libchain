@@ -19,7 +19,15 @@ export default {
   // POST /api/users/lend
   lend: {
     body: {
-      something: Joi.string().required() // not sure if needed
+      bookAddress: Joi.string().required()
+    }
+  },
+
+  // POST /api/users/admin/buy
+  buy: {
+    body: {
+      bookAddress: Joi.string().required(),
+      publisherAddress: Joi.string().required() 
     }
   },
 
