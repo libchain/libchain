@@ -166,12 +166,11 @@ contract Library {
 
         if(inventory[book].amount == 0){
             inventory[book] = BookMeta(book, amount, amount);
+		    _libBooks.push(book);
 		} else {
             inventory[book].amount += amount;
             inventory[book].availableInstances += amount;
 		}
-
-		_libBooks.push(book);
 		return true;
 	}
 
