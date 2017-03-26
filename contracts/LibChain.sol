@@ -110,12 +110,15 @@ contract Library {
 		address bookAddress;
 		bytes 
 	} */
+
 	mapping(address => byte[][]) public inventory;
-	Book[] libBooks;
+	Book[] _libBooks;
 	mapping(address => mapping(address => uint)) internal users;
 
 	string public name;
 	address public owner;
+
+    event BuyBook(address newBook);
 
 	modifier onlyOwner(){
 		if (msg.sender != owner) {
@@ -138,7 +141,11 @@ contract Library {
 	}
 
 	function getBooks() returns (Book[]) {
-		return libBooks;
+		return _libBooks;
+	}
+
+	function getNumberOfBooks() returns (uint){
+	    return _libBooks.length;
 	}
 
 	function getName() returns (string) {
@@ -146,13 +153,16 @@ contract Library {
 	}
 
 	// onlyOwner modifier was removed because of the strange behavior of msg.sender 
-	function buy(address bookContract, address publisherContract, uint amount) {
+	function buy(address bookContract, address publisherContract, uint amount) returns (Book[]) {
 		Publisher pub = Publisher(publisherContract);
-		// Book book = Book(bookContract);
 		pub.buyBook(bookContract, amount);
 		inventory[bookContract].length++;
-		Book libBook = Book(bookContract);
-		libBooks.push(libBook);
+		uint length = _libBooks.push(Book(bookContract));
+
+		//uint length = _libBooks.push(new Book("test", 2001, "test", "test"));
+		//event;
+		//BuyBook(libBooks[length-1]);
+		return _libBooks;
 	}
 
 	function borrow(address bookContract, bytes1[] publicKey) onlyCustomer returns (bool success) {

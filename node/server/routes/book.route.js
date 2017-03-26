@@ -5,9 +5,14 @@ import config from '../../config/config';
 const router = express.Router(); // eslint-disable-line new-cap
 
 router.route('/')
-  
+
   /** GET /api/books - Fetches lib books */
-  .post(bookCtrl.getLibBooks);
+  .get(bookCtrl.getLibBooks);
+
+router.route('/testbuy')
+
+/** GET /api/books - Fetches lib books */
+  .post(bookCtrl.buySomeBooksTest);
 
 router.route('/admin')
   /** GET /api/books/admin - Fetches publisher books  */

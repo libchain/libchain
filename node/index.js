@@ -31,16 +31,19 @@ if (config.MONGOOSE_DEBUG) {
 
 var libChainInstance;
 var libAddress;
+var libInstance;
 
 contracts.libChainContract.deployed().then((instance) => {
     libChainInstance = instance;
-    return libChainInstance.newLibrary("CIT", { from: contracts.web3.eth.accounts[0], gas: 1000000 }) //change default of contract's from
+    return libChainInstance.newLibrary("CIT", { from: contracts.web3.eth.accounts[0], gas: 3000000 }) //change default of contract's from
   })
   .then((transactionReceipt) => {
     libAddress = transactionReceipt.logs[0].args['newLibrary'];
-  })
+  }).then(function() {
+    libInstance = contracts.libraryContract.at(libAddress);
+});
 
-export { libAddress, libChainInstance };
+export { libAddress, libInstance, libChainInstance };
 
 // module.parent check is required to support mocha watch
 // src: https://github.com/mochajs/mocha/issues/1912
