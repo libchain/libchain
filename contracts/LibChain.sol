@@ -106,12 +106,14 @@ contract Library {
 	// book address to array of users' public keys
 
 	// need wallets for libraries
-	/* struct Inventory {
-		address bookAddress;
-		bytes 
-	} */
+	struct BookMeta {
+		Book book;
+		uint amount;  // == maxIndex-1
+		uint availableInstances;
+		mapping(uint => string) pubkeys; //index mapping to key
+	}
 
-	mapping(address => byte[][]) public inventory;
+	mapping(address => BookMeta) public inventory;
 	Book[] _libBooks;
 	mapping(address => mapping(address => uint)) internal users;
 
@@ -144,6 +146,10 @@ contract Library {
 		return _libBooks;
 	}
 
+	function getAvailableInstances(address book) returns (uint){
+        return inventory[book].availableInstances;
+	}
+
 	function getNumberOfBooks() returns (uint){
 	    return _libBooks.length;
 	}
@@ -153,34 +159,55 @@ contract Library {
 	}
 
 	// onlyOwner modifier was removed because of the strange behavior of msg.sender 
-	function buy(address bookContract, address publisherContract, uint amount) returns (Book[]) {
+	function buy(address bookContract, address publisherContract, uint amount) returns (bool) {
 		Publisher pub = Publisher(publisherContract);
 		pub.buyBook(bookContract, amount);
-		inventory[bookContract].length++;
-		uint length = _libBooks.push(Book(bookContract));
+        Book book = Book(bookContract);
 
-		//uint length = _libBooks.push(new Book("test", 2001, "test", "test"));
-		//event;
-		//BuyBook(libBooks[length-1]);
-		return _libBooks;
+        if(inventory[book].amount == 0){
+            inventory[book] = BookMeta(book, amount, amount);
+		} else {
+            inventory[book].amount += amount;
+            inventory[book].availableInstances += amount;
+		}
+
+		_libBooks.push(book);
+		return true;
 	}
 
-	function borrow(address bookContract, bytes1[] publicKey) onlyCustomer returns (bool success) {
-		if(inventory[bookContract].length == 0)return false;
+	function borrow(address bookContract, string publicKey) onlyCustomer returns (bool) {
+		if(inventory[bookContract].availableInstances <= 0) return false;
 		Book book = Book(bookContract);
-		if(book.transfer(msg.sender, 1)){
-			for (var i = 0; i < inventory[bookContract].length; i++) {
-				if (inventory[bookContract][i].length == 0) {
-					//TODO: check if it works
-					inventory[bookContract][i] = publicKey;
-					break;
-				}
-			}
-			users[msg.sender][bookContract]++;
-			return true;
-		}	
-		return false;
+        for (var i = 0; i < inventory[bookContract].amount; i++) {
+            if (sha3(inventory[bookContract].pubkeys[i]) == sha3("")) {
+                //TODO: check if it works
+                inventory[bookContract].pubkeys[i] = publicKey;
+                inventory[bookContract].availableInstances--;
+
+                users[msg.sender][bookContract]++;
+                return true;
+            }
+        }
+
+        return false;
 	}
+
+	function returnBook(address bookContract, string publicKey) onlyCustomer returns (bool) {
+    		if(inventory[bookContract].amount <= 0) return false;
+    		Book book = Book(bookContract);
+            for (var i = 0; i < inventory[bookContract].amount; i++) {
+                if (sha3(inventory[bookContract].pubkeys[i]) == sha3(publicKey)) {
+                    //TODO: check if it works
+                    inventory[bookContract].pubkeys[i] = "";
+                    inventory[bookContract].availableInstances++;
+
+                    users[msg.sender][bookContract]--;
+                    return true;
+                }
+            }
+
+        return false;
+    }
 
 }
 

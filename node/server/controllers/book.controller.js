@@ -3,52 +3,34 @@ import { libAddress, libInstance} from '../../index';
 var libchainInstance;
 
 function getLibBooks(req, res) {
-  let library;
   var books = [];
-  // contracts.libraryContract.at(/* library address */).then((libraryInstance) => {
-  //   // needs to get the library instance to run through its inventory
-  //   return Object.keys(libraryInstance.libBooks.call()).map((bookAddress) => {
-  //     // maps all the address with the books itselves
-  //     contracts.bookContract.at(bookAddress).then((bookInstance) => {
-  //       books.push(bookInstance)
-  //     })
-  //   })
-  //     .then((result) => {
-  //       // return here the books as json with res.json(books)
-  //     })
-  // })
+  var libBooks = libInstance.getBooks.call({ from: contracts.web3.eth.accounts[0], gas: 1000000 });
 
-  //var libBooks = libInstance.getBooks.call();
-
-  contracts.libraryContract.at(libAddress).then((instance) => {
-    instance.getBooks.call().then((bookInstances) => {
-      console.log("bookInstances " + bookInstances.length);
-      return Promise.map(bookInstances, (bookInstance) => {
-        return bookInstance.getBookInfo.call()
-      }).then((book) => {
-        res.json(book);
-      });
-    });
-  });
-
-
-/*
-  Promise.resolve(libBooks).then((bookInstances) => {
-    console.log("bookInstances " + bookInstances);
-    return Promise.map(bookInstances, (bookInstance) => {
-      return bookInstance.getBookInfo.call()
-    })
-  }).then((allBookAddresses) => {
+  Promise.resolve(libBooks).then((allBookAddresses) =>{
     return Promise.map(allBookAddresses, (bookAddress) => {
       return contracts.bookContract.at(bookAddress)
     })
   })
+    .then((bookInstances) => {
+      return Promise.all(bookInstances)
+    })
+    .then((bookInstances) => {
+      return Promise.map(bookInstances, (bookInstance) => {
+        return bookInstance.getBookInfo.call()
+      })
+    })
     .then((bookInfos) => {
-      console.log("bookinfos" + bookInfos);
       return Promise.all(bookInfos)
+    })
+    .then((bookInfos) =>{
+      return Promise.map(bookInfos, (bookInfo) => {
+        bookInfo[7] = libInstance.getAvailableInstances.call(bookInfo[6]);
+        return Promise.all(bookInfo);
+      })
     })
     .then((result) => {
       result.forEach(book => {
+        console.log(book);
         books.push({
           year: book[0].c[0],
           name: book[1],
@@ -56,13 +38,14 @@ function getLibBooks(req, res) {
           publisherName: book[3],
           libraryBalance: book[4],
           publisherAddress: book[5],
-          bookAddress: book[6]
+          bookAddress: book[6],
+          availableInstances: book[7]
         })
       })
     })
-    .then((book) => {
+    .then(() => {
       res.json(books)
-    })*/
+    })
 }
 
 function getAllPubBooks(req, res) {
@@ -124,8 +107,6 @@ function getAllPubBooks(req, res) {
 function buySomeBooksTest(req, res) {
   var publishers = getAllPublishers();
   var publisher;
-  var publisherAddress;
-  var books = [];
   // buy books
 
   Promise.all(publishers).then((publisherInstances) => {
@@ -135,12 +116,9 @@ function buySomeBooksTest(req, res) {
   })
     .then((result) => {
       console.log("book " + result[0]+ " publisher : " + publisher.address);
-      return libInstance.buy.call(result[0], publisher.address, 5);
-    }).then(function (book) {
-      console.log("bought a book : " + book);
-      return libInstance.getNumberOfBooks.call();
-  }).then( number => {
-      res.json(number);
+      return libInstance.buy(result[0], publisher.address, 5, { from: contracts.web3.eth.accounts[0], gas: 1000000 });
+    }) .then( result => {
+      res.json(result);
   });
 }
 
