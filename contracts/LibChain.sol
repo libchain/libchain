@@ -173,6 +173,15 @@ contract Library {
 		return true;
 	}
 
+    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (bool) {
+        if(sha3(pubkey) == sha3("")) return false;
+
+        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
+            return true;
+        }
+        return false;
+    }
+
 	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
 		if(inventory[bookContract].availableInstances <= 0) return false;
 		Book book = Book(bookContract);
