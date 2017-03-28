@@ -103,9 +103,12 @@ contract Publisher{
 
 
 contract Library {
-	// book address to array of users' public keys
 
-	// need wallets for libraries
+    struct UserData{
+        address[] loanedBooks;
+        mapping (address => string) pubkeys; //book address to pubKey mapping
+    }
+
 	struct BookMeta {
 		Book book;
 		uint amount;  // == maxIndex-1
@@ -115,7 +118,7 @@ contract Library {
 
 	mapping(address => BookMeta) public inventory;
 	Book[] _libBooks;
-	mapping(address => mapping(address => uint)) internal users;
+	mapping(string => UserData) internal users;
 
 	string public name;
 	address public owner;
@@ -126,14 +129,6 @@ contract Library {
 		if (msg.sender != owner) {
 			throw;
 		}
-		_;
-	}
-
-	modifier onlyCustomer(){
-		if (users[msg.sender][0] == 0) {
-      throw;	
-		}
-
 		_;
 	}
 
@@ -148,6 +143,10 @@ contract Library {
 
 	function getAvailableInstances(address book) returns (uint){
         return inventory[book].availableInstances;
+	}
+
+	function getNumberOfInstances(address book) returns (uint){
+	    return inventory[book].amount;
 	}
 
 	function getNumberOfBooks() returns (uint){
@@ -174,7 +173,7 @@ contract Library {
 		return true;
 	}
 
-	function borrow(address bookContract, string publicKey) onlyCustomer returns (bool) {
+	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
 		if(inventory[bookContract].availableInstances <= 0) return false;
 		Book book = Book(bookContract);
         for (var i = 0; i < inventory[bookContract].amount; i++) {
@@ -183,7 +182,11 @@ contract Library {
                 inventory[bookContract].pubkeys[i] = publicKey;
                 inventory[bookContract].availableInstances--;
 
-                users[msg.sender][bookContract]++;
+                // store loan to user object
+                //TODO: check whether this book is already loaned by this user
+                users[userId].loanedBooks.push(bookContract);
+                users[userId].pubkeys[bookContract] = publicKey;
+
                 return true;
             }
         }
@@ -191,7 +194,7 @@ contract Library {
         return false;
 	}
 
-	function returnBook(address bookContract, string publicKey) onlyCustomer returns (bool) {
+	function returnBook(address bookContract, string publicKey, string userId) returns (bool) {
     		if(inventory[bookContract].amount <= 0) return false;
     		Book book = Book(bookContract);
             for (var i = 0; i < inventory[bookContract].amount; i++) {
@@ -200,7 +203,15 @@ contract Library {
                     inventory[bookContract].pubkeys[i] = "";
                     inventory[bookContract].availableInstances++;
 
-                    users[msg.sender][bookContract]--;
+
+                    // remove book from user object
+                    for (var j = 0; j < users[userId].loanedBooks.length; j++) {
+                        if(users[userId].loanedBooks[i] == bookContract){
+                            delete users[userId].loanedBooks[j];
+                            break;
+                        }
+                    }
+                    users[userId].pubkeys[bookContract] = "";
                     return true;
                 }
             }
