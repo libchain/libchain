@@ -145,6 +145,10 @@ contract Library {
         return inventory[book].availableInstances;
 	}
 
+	function getNumberOfInstances(address book) returns (uint){
+	    return inventory[book].amount;
+	}
+
 	function getNumberOfBooks() returns (uint){
 	    return _libBooks.length;
 	}
@@ -154,7 +158,7 @@ contract Library {
 	}
 
 	// onlyOwner modifier was removed because of the strange behavior of msg.sender 
-	function buy(address bookContract, address publisherContract, uint amount) onlyOwner returns (bool) {
+	function buy(address bookContract, address publisherContract, uint amount) returns (bool) {
 		Publisher pub = Publisher(publisherContract);
 		pub.buyBook(bookContract, amount);
         Book book = Book(bookContract);
@@ -169,7 +173,7 @@ contract Library {
 		return true;
 	}
 
-	function borrow(address bookContract, string publicKey, string userId) onlyOwner returns (bool) {
+	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
 		if(inventory[bookContract].availableInstances <= 0) return false;
 		Book book = Book(bookContract);
         for (var i = 0; i < inventory[bookContract].amount; i++) {
@@ -190,7 +194,7 @@ contract Library {
         return false;
 	}
 
-	function returnBook(address bookContract, string publicKey, string userId) onlyOwner returns (bool) {
+	function returnBook(address bookContract, string publicKey, string userId) returns (bool) {
     		if(inventory[bookContract].amount <= 0) return false;
     		Book book = Book(bookContract);
             for (var i = 0; i < inventory[bookContract].amount; i++) {
