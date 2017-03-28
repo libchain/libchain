@@ -31,6 +31,14 @@ function getLibBooks(req, res) {
     .then((result) => {
       result.forEach(book => {
         console.log(book);
+        var status;
+        if(book[7] > 0) {
+          status = "Available"
+        } else {
+          status = "Booked Out"
+        }
+
+
         books.push({
           year: book[0].c[0],
           name: book[1],
@@ -39,7 +47,8 @@ function getLibBooks(req, res) {
           libraryBalance: book[4],
           publisherAddress: book[5],
           bookAddress: book[6],
-          availableInstances: book[7]
+          availableInstances: book[7],
+          status : status
         })
       })
     })
