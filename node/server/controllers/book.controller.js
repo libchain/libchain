@@ -1,12 +1,11 @@
 import contracts from '../helpers/contracts';
-import { libAddress, libInstance} from '../../index';
-var libchainInstance;
+import { libAddress, libInstance, libChainInstance} from '../../index';
 
 function getLibBooks(req, res) {
   var books = [];
   var libBooks = libInstance.getBooks.call({ from: contracts.web3.eth.accounts[0], gas: 1000000 });
 
-  Promise.resolve(libBooks).then((allBookAddresses) =>{
+  libBooks.then((allBookAddresses) =>{
     return Promise.map(allBookAddresses, (bookAddress) => {
       return contracts.bookContract.at(bookAddress)
     })
@@ -138,7 +137,7 @@ function getAllPublisherAddresses() {
     let numBook = numberOfBooks.c[0]
     console.log(numBook, typeof numBook)
     for (var i = 0; i < numBook; i++) {
-      publisherAddresses.push(Promise.resolve(libchainInstance.getPublisher.call(i)).then(function (address) {
+      publisherAddresses.push(Promise.resolve(libChainInstance.getPublisher.call(i)).then(function (address) {
           return address
         })
       )
@@ -146,21 +145,12 @@ function getAllPublisherAddresses() {
 
     return publisherAddresses
   })
-  .catch(function (error) { console.err('error: ', error) });
+  .catch(function (error) { console.log('error: ', error) });
 
 }
 
 function getNumberOfPublishers() {
-  return getLibChainInstance().then((lcInstance) => {
-    libchainInstance = lcInstance
-    return libchainInstance.getNumPublisher.call();
-  })
-  .catch(function (error) { console.err('error: ', error) });
-}
-
-
-function getLibChainInstance() {
-  return contracts.libChainContract.deployed();
+  return libChainInstance.getNumPublisher.call();
 }
 
 
