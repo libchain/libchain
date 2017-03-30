@@ -183,11 +183,11 @@ contract Library {
     }
 
 	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
-        
+
 		if(inventory[bookContract].availableInstances <= 0) return false;
 
 		//check if this book already loaned to user
-        if (users[userId].pubkeys[bookContract] != sha3("")){
+        if (sha3(users[userId].pubkeys[bookContract]) != sha3("")){
             return false;
         }
 
@@ -199,7 +199,6 @@ contract Library {
                 inventory[bookContract].availableInstances--;
 
                 // store loan to user object
-                //TODO: check whether this book is already loaned by this user
                 users[userId].loanedBooks.push(bookContract);
                 users[userId].pubkeys[bookContract] = publicKey;
 
