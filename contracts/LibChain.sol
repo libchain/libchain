@@ -101,6 +101,39 @@ contract Publisher{
 	}
 }
 
+contract Metric{
+    struct PublisherMetrics{
+        uint numberOfPublications;
+        uint numberOfSoldBookInstances;
+    }
+
+    struct LibraryMetrics{
+        uint numberOfBooks;
+        uint sumOfLoans;
+        uint sumOfReturns;
+    }
+
+    struct BookMetrics{
+        uint numberOfLoans;
+        uint numberOfSoldInstances;
+    }
+
+
+    mapping(address=>PublisherMetrics) publisherMetrics;
+    mapping(address=>LibraryMetrics) libraryMetrics;
+    mapping(address=>BookMetrics) bookMetrics;
+
+
+    function addPublication() {
+        publisherMetrics[msg.sender].numberOfPublications +=1;
+    }
+
+
+
+
+
+}
+
 
 contract Library {
 
