@@ -174,8 +174,25 @@ contract Library {
 		return true;
 	}
 
+    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (bool) {
+        if(sha3(pubkey) == sha3("")) return false;
+
+        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
+            return true;
+        }
+        return false;
+    }
+
 	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
+
 		if(inventory[bookContract].availableInstances <= 0) return false;
+
+		//check if this book already loaned to user
+        if (sha3(users[userId].pubkeys[bookContract]) != sha3("")){
+            return false;
+        }
+
+
 		Book book = Book(bookContract);
         for (var i = 0; i < inventory[bookContract].amount; i++) {
             if (sha3(inventory[bookContract].pubkeys[i]) == sha3("")) {
@@ -183,7 +200,6 @@ contract Library {
                 inventory[bookContract].availableInstances--;
 
                 // store loan to user object
-                //TODO: check whether this book is already loaned by this user
                 users[userId].loanedBooks.push(bookContract);
                 users[userId].pubkeys[bookContract] = publicKey;
 
