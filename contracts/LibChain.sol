@@ -43,8 +43,8 @@ contract Book {
 		_balances[buyer] += amount;
 	}
 
-	function transfer(address receiver, uint amount) returns(bool){
-		if(_balances[msg.sender] >= amount){
+	function transfer(address receiver, uint amount) returns(bool) {
+		if (_balances[msg.sender] >= amount){
 			_balances[msg.sender] -= amount;
 			_balances[receiver] += amount;
 			return true;
@@ -65,20 +65,20 @@ contract Publisher{
 
 	event PublishBook(address newBook);
 
-	function Publisher(string n, string l){
+	function Publisher(string n, string l) {
 		name = n;
 		location = l;
 	}
 
 	function getName() returns(string) {
-        return name;
+    return name;
 	}
 
 	function getLocation() returns(string) {
 		return location;
 	}
 	
-	function publishBook(uint year, string id, string gate) returns(address bookContract){
+	function publishBook(uint year, string id, string gate) returns(address bookContract) {
 		publishedBooks.push(new Book(name, year, id, gate));
 		bookNum++;
 		// Event for publishing a book
@@ -141,16 +141,16 @@ contract Library {
 		return _libBooks;
 	}
 
-	function getAvailableInstances(address book) returns (uint){
-        return inventory[book].availableInstances;
+	function getAvailableInstances(address book) returns (uint) {
+    return inventory[book].availableInstances;
 	}
 
-	function getNumberOfInstances(address book) returns (uint){		
-	    return inventory[book].amount;
+	function getNumberOfInstances(address book) returns (uint) {		
+	  return inventory[book].amount;
 	}
 
 	function getNumberOfBooks() returns (uint) {
-	    return _libBooks.length;
+	  return _libBooks.length;
 	}
 
 	function getName() returns (string) {
@@ -163,7 +163,7 @@ contract Library {
 		pub.buyBook(bookContract, amount);
     Book book = Book(bookContract);	
 
-    if(inventory[book].amount == 0){
+    if (inventory[book].amount == 0) {
       inventory[book] = BookMeta(book, amount, amount);
     	_libBooks.push(book);
 		} else {
@@ -174,66 +174,67 @@ contract Library {
 		return true;
 	}
 
-    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (bool) {
-        if(sha3(pubkey) == sha3("")) return false;
+  function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (bool) {
+      if (sha3(pubkey) == sha3("")) return false;
 
-        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
-            return true;
-        }
-        return false;
-    }
+      if (sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)) {
+        return true;
+      }
+      return false;
+  }
 
 	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
 
-		if(inventory[bookContract].availableInstances <= 0) return false;
+		if (inventory[bookContract].availableInstances <= 0) return false;
 
 		//check if this book already loaned to user
-        if (sha3(users[userId].pubkeys[bookContract]) != sha3("")){
-            return false;
-        }
+    if (sha3(users[userId].pubkeys[bookContract]) != sha3("")) {
+      return false;
+    }
 
 
 		Book book = Book(bookContract);
-        for (var i = 0; i < inventory[bookContract].amount; i++) {
-            if (sha3(inventory[bookContract].pubkeys[i]) == sha3("")) {
-                inventory[bookContract].pubkeys[i] = publicKey;
-                inventory[bookContract].availableInstances--;
+    for (var i = 0; i < inventory[bookContract].amount; i++) {
+      if (sha3(inventory[bookContract].pubkeys[i]) == sha3("")) {
+	      inventory[bookContract].pubkeys[i] = publicKey;
+	      inventory[bookContract].availableInstances--;
 
-                // store loan to user object
-                users[userId].loanedBooks.push(bookContract);
-                users[userId].pubkeys[bookContract] = publicKey;
+	      // store loan to user object
+	      users[userId].loanedBooks.push(bookContract);
+	      users[userId].pubkeys[bookContract] = publicKey;
 
-                return true;
-            }
-        }
+	      return true;
+      }
+    }
 
-        return false;
+    return false;
 	}
 
 	function returnBook(address bookContract, string publicKey, string userId) returns (bool) {
-    		if(inventory[bookContract].amount <= 0) return false;
-    		Book book = Book(bookContract);
-            for (var i = 0; i < inventory[bookContract].amount; i++) {
-                if (sha3(inventory[bookContract].pubkeys[i]) == sha3(publicKey)) {
-                    //TODO: check if it works
-                    inventory[bookContract].pubkeys[i] = "";
-                    inventory[bookContract].availableInstances++;
+		if (inventory[bookContract].amount <= 0) return false;
 
+		Book book = Book(bookContract);
 
-                    // remove book from user object
-                    for (var j = 0; j < users[userId].loanedBooks.length; j++) {
-                        if(users[userId].loanedBooks[i] == bookContract){
-                            delete users[userId].loanedBooks[j];
-                            break;
-                        }
-                    }
-                    users[userId].pubkeys[bookContract] = "";
-                    return true;
-                }
-            }
+    for (var i = 0; i < inventory[bookContract].amount; i++) {
+	    if (sha3(inventory[bookContract].pubkeys[i]) == sha3(publicKey)) {
+        //TODO: check if it works
+        inventory[bookContract].pubkeys[i] = "";
+        inventory[bookContract].availableInstances++;
 
-        return false;
+        // remove book from user object
+        for (var j = 0; j < users[userId].loanedBooks.length; j++) {
+          if (users[userId].loanedBooks[i] == bookContract) {
+            delete users[userId].loanedBooks[j];
+            break;
+          }
+        }
+        users[userId].pubkeys[bookContract] = "";
+        return true;
+	    }
     }
+
+    return false;
+  }
 
 }
 
@@ -268,11 +269,11 @@ contract LibChain{
 	}
 
 	function getPublisher(uint number) returns(address) {
-	    return publishers[number];
+	  return publishers[number];
 	}
 
 	function getNumPublisher() returns (uint c) {
-	    return pubNum;
+	  return pubNum;
 	}
 
 	function getNumLibraries() returns (uint c) {
