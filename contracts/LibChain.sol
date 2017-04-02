@@ -104,10 +104,10 @@ contract Publisher{
 
 contract Library {
 
-    struct UserData{
-        address[] loanedBooks;
-        mapping (address => string) pubkeys; //book address to pubKey mapping
-    }
+  struct UserData {
+    address[] loanedBooks;
+    mapping (address => string) pubkeys; //book address to pubKey mapping
+  }
 
 	struct BookMeta {
 		Book book;
@@ -123,16 +123,16 @@ contract Library {
 	string public name;
 	address public owner;
 
-    event BuyBook(address newBook);
+  event BuyBook(address newBook);
 
-	modifier onlyOwner(){
+	modifier onlyOwner() {
 		if (msg.sender != owner) {
 			throw;
 		}
 		_;
 	}
 
-	function Library(string n){
+	function Library(string n) {
 		owner = msg.sender;	
 		name = n;
 	}
@@ -145,11 +145,11 @@ contract Library {
         return inventory[book].availableInstances;
 	}
 
-	function getNumberOfInstances(address book) returns (uint){
+	function getNumberOfInstances(address book) returns (uint){		
 	    return inventory[book].amount;
 	}
 
-	function getNumberOfBooks() returns (uint){
+	function getNumberOfBooks() returns (uint) {
 	    return _libBooks.length;
 	}
 
@@ -161,15 +161,16 @@ contract Library {
 	function buy(address bookContract, address publisherContract, uint amount) returns (bool) {
 		Publisher pub = Publisher(publisherContract);
 		pub.buyBook(bookContract, amount);
-        Book book = Book(bookContract);
+    Book book = Book(bookContract);	
 
-        if(inventory[book].amount == 0){
-            inventory[book] = BookMeta(book, amount, amount);
-		    _libBooks.push(book);
+    if(inventory[book].amount == 0){
+      inventory[book] = BookMeta(book, amount, amount);
+    	_libBooks.push(book);
 		} else {
-            inventory[book].amount += amount;
-            inventory[book].availableInstances += amount;
+      inventory[book].amount += amount;
+      inventory[book].availableInstances += amount;
 		}
+
 		return true;
 	}
 
@@ -178,7 +179,6 @@ contract Library {
 		Book book = Book(bookContract);
         for (var i = 0; i < inventory[bookContract].amount; i++) {
             if (sha3(inventory[bookContract].pubkeys[i]) == sha3("")) {
-                //TODO: check if it works
                 inventory[bookContract].pubkeys[i] = publicKey;
                 inventory[bookContract].availableInstances--;
 

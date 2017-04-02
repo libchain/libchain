@@ -1,5 +1,5 @@
 {
-  "name": "real-world",
+  "name": "libchain-user-client",
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
@@ -19,7 +19,9 @@
     "cryptico": "^1.0.2",
     "formsy-material-ui": "^0.5.5",
     "formsy-react": "^0.19.2",
+    "generate-rsa-keypair": "^0.1.1",
     "humps": "^1.1.0",
+    "keypair": "^1.0.1",
     "lodash": "^4.16.1",
     "material-ui": "^0.17.0",
     "normalizr": "3.0.0",

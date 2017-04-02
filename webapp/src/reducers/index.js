@@ -2,7 +2,6 @@ import * as ActionTypes from '../actions';
 import { routerReducer as routing } from 'react-router-redux';
 import { combineReducers } from 'redux';
 
-import { generateRSAKey, publicKeyString } from 'cryptico'
 // Updates an entity cache in response to any action with response.entities.
 const login = (state = {
   jwt: null,
@@ -41,23 +40,36 @@ const login = (state = {
   }
 };
 
-const keyPair = (state = {
-  publicKey: '',
-  privateKey: null
+const borrowedBook = (state = {
+  keypair: null,
+  bookAddress: '',
 }, action) => {
   const { type } = action;
 
-  if (type === ActionTypes.GENERATE_KEY_PAIR) {
-    let privateKey = generateRSAKey(localStorage.getItem('loginToken').slice(0,30), 1024)
-    
+  switch(type) {
+  case ActionTypes.REGISTER_BORROW: 
     return {
-      publicKey: publicKeyString(privateKey),
-      privateKey
+      keypair: action.keypair,
+      bookAddress: action.bookAddress
     }
+  default:
+    return state;
   }
+}
 
-  return state;
-};
+const borrowedBooks = (state = [], action) => {
+  const { type } = action;
+
+  switch(type) {
+  case ActionTypes.REGISTER_BORROW:
+    return [ ...state, borrowedBook(undefined, action)];
+  case ActionTypes.UNREGISTER_BORROW: 
+    return [ ...state.filter(borrowedBook => borrowedBook.bookAddress !== action.bookAddress) ]
+  default: 
+    return state;
+  }
+}
+// TODO: lend books should save the public keys into indexed db
 
 const books = (state = [], action) => {
   const { type } = action;
@@ -94,7 +106,7 @@ const errorMessage = (state = null, action) => {
 const rootReducer = combineReducers({
   login,
   errorMessage,
-  keyPair,
+  borrowedBooks,
   books,
   routing
 });

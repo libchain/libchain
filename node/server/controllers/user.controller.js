@@ -34,7 +34,7 @@ function processLendRequest(req, res) {
   User.get(req.user.email).then((user) => {
 
     return contracts.libraryContract.at(libAddress).then( (instance) => {
-      return instance.borrow(req.body.bookAddress, user.publicKey, user.email, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
+      return instance.borrow(req.body.bookAddress, req.body.publicKey, user.email, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
     })
       .then((transactionReceipt) => {
         console.log(transactionReceipt.logs)

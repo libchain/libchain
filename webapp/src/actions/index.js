@@ -1,4 +1,5 @@
 import { CALL_API } from '../middleware/api';
+import keypair from 'keypair';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -92,15 +93,15 @@ const fetchBooks = (fromAdmin) => ({
 export const requestBooks = (fromAdmin) => (dispatch) => {
   return dispatch(fetchBooks(fromAdmin));
 };
-export const BUY_OR_LEND_REQUEST = 'BUY_OR_LEND_REQUEST';
-export const BUY_OR_LEND_SUCCESS = 'BUY_OR_LEND_SUCCESS';
-export const BUY_OR_LEND_FAILURE = 'BUY_OR_LEND_FAILURE';
+export const BUY_REQUEST = 'BUY_REQUEST';
+export const BUY_SUCCESS = 'BUY_SUCCESS';
+export const BUY_FAILURE = 'BUY_FAILURE';
 
-const sendBuyOrLendRequest = (bookAddress, publisherAddress) => ({
+const sendBuyRequest = (bookAddress, publisherAddress) => ({
   [CALL_API]: {
-    types: [ BUY_OR_LEND_REQUEST, BUY_OR_LEND_SUCCESS, BUY_OR_LEND_FAILURE ],
+    types: [ BUY_REQUEST, BUY_SUCCESS, BUY_FAILURE ],
     verb: 'POST',
-    endpoint: 'users/' + (publisherAddress !== undefined ? 'admin/buy' : 'lend'),
+    endpoint: 'users/admin/buy',
     authentificate: true,
     payload: {
       bookAddress,
@@ -108,13 +109,48 @@ const sendBuyOrLendRequest = (bookAddress, publisherAddress) => ({
     }
   }
 });
+export const BORROW_REQUEST = 'BORROW_REQUEST';
+export const BORROW_SUCCESS = 'BORROW_SUCCESS';
+export const BORROW_FAILURE = 'BORROW_FAILURE';
+
+const sendBorrowRequest = (bookAddress, publicKey) => ({
+  [CALL_API]: {
+    types: [ BORROW_REQUEST, BORROW_SUCCESS, BORROW_FAILURE ],
+    verb: 'POST',
+    endpoint: 'users/lend',
+    authentificate: true,
+    payload: {
+      bookAddress,
+      publicKey
+    }
+  }
+});
 
 export const buyBook = (bookAddress, publisherAddress) => (dispatch) => {
-  return dispatch(sendBuyOrLendRequest(bookAddress, publisherAddress));
+  return dispatch(sendBuyRequest(bookAddress, publisherAddress));
 };
 
-export const lendBook = (bookAddress) => (dispatch) => {
-  return dispatch(sendBuyOrLendRequest(bookAddress));
+export const REGISTER_BORROW = 'REGISTER_BORROW';
+
+const registerBorrow = (bookAddress, keypair) => ({
+  type: REGISTER_BORROW,
+  bookAddress,
+  keypair
+})
+
+export const UNREGISTER_BORROW = 'UNREGISTER_BORROW';
+
+const unregisterBorrow = (bookAddress) => ({
+  type: UNREGISTER_BORROW,
+  bookAddress
+})
+
+export const borrowBook = (bookAddress) => (dispatch) => {
+  let keypair = keypair();
+
+  dispatch(sendBorrowRequest(bookAddress, keypair.public));
+
+  return dispatch(registerBorrow(bookAddress, keypair));
 };
 
 export const publicKey = () => (dispatch, getState) => {

@@ -31,11 +31,15 @@ class LibraryPage extends Component {
     const { isAdmin } = this.props
     if (isAdmin) {
       this.props.buyBook(bookAddress, publisherAddress);
-
       return;
     }
 
     this.props.lendBook(bookAddress);
+    this.props.requestBooks(this.props.isAdmin)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.props.requestBooks(this.props.isAdmin)
   }
 
   getTableColumnsNumber() {
@@ -85,13 +89,48 @@ class LibraryPage extends Component {
     return header; 
   }
 
+  getBookStatus(book) {
+    const { borrowedBooks } = this.props;
+
+    let found = borrowedBooks.filter(borrowedBook => borrowedBook.bookAddress === book.bookAddress)
+
+    if (found.length > 0) {
+      return 'Borrowed';
+    } else if (book.availableInstances.length > 0) {
+      return 'Available';
+    } else {
+      return 'Booked out';
+    }
+  }
+
+  renderActionButtons(book) {
+    const { isAdmin, borrowedBooks } = this.props
+    let isBorrowed = !isAdmin && borrowedBooks.map(borrowedBook => borrowedBook.bookAddress).indexOf(book.bookAddress) !== -1 
+    let infoButton = <FlatButton label={"Info"} primary={true} />
+    let buyLendButton = <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} onClick={this.handleAction.bind(this, book.bookAddress, book.publisherAddress)}/> 
+    let viewButton = <FlatButton label={"View"} primary={true} />
+    let returnButton =  isBorrowed ?
+            <FlatButton label={"Return"} primary={true} /> :
+            <div></div>
+    let mainActionButton = isBorrowed ? viewButton : buyLendButton;
+
+    let buttons = (
+        <div>
+          { mainActionButton }
+          { infoButton }
+          { returnButton }
+        </div>
+      )
+    return buttons
+  }
+
   renderTableRows() {
-    const { isLogged, isAdmin, books } = this.props
+    const { isLogged, isAdmin, books, borrowedBooks } = this.props
 
     return books.map( (book, index) => {
       let button = isLogged ? ( 
         <TableRowColumn>
-          <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} onClick={this.handleAction.bind(this, book.bookAddress, book.publisherAddress)}/> 
+          { this.renderActionButtons(book) }
         </TableRowColumn>) :
         <div style={{display: 'none'}}></div>
       return (
@@ -107,7 +146,7 @@ class LibraryPage extends Component {
                 {book.publisherName}
               </TableRowColumn> :
               <TableRowColumn>
-                {book.status}
+                {this.getBookStatus(book)}
               </TableRowColumn>
           }
           { isAdmin ? 
@@ -145,6 +184,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     books: state.books,
     isLogged: state.login.jwt !== null,
+    borrowedBooks: state.borrowedBooks,
     ...ownProps
   }
 }

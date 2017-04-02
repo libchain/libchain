@@ -19,7 +19,8 @@ export default {
   // POST /api/users/lend
   lend: {
     body: {
-      bookAddress: Joi.string().required()
+      bookAddress: Joi.string().required(),
+      publicKey: Joi.string().required()
     }
   },
 
