@@ -12,10 +12,6 @@ router.route('/')
   /** POST /api/users - Create new user */
   .post(validate(paramValidation.createUser), userCtrl.create);
 
-router.route('/publicKey')
-  /** PUT /api/users/:userId - Update user  (sets public key) */
-  .put(validate(paramValidation.publicKey), expressJwt({ secret: config.jwtSecret }), userCtrl.setPublicKey)
-
 router.route('/lend')
   /** Not sure whether this is needed */
   /** POST /api/users/:userEmail - Pipes lend request to publisher */
@@ -24,6 +20,11 @@ router.route('/return')
   /** Not sure whether this is needed */
   /** POST /api/users/:userEmail - Pipes lend request to publisher */
   .post(validate(paramValidation.lend), expressJwt({ secret: config.jwtSecret }), userCtrl.processReturnRequest)
+
+router.route('/view')
+  /** Not sure whether this is needed */
+  /** GET /api/view  */
+  .post(validate(paramValidation.view), expressJwt({ secret: config.jwtSecret }), userCtrl.processViewRequest)
 
 router.route('/admin/buy')
   /** Not sure whether this is needed */

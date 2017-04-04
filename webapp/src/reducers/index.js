@@ -87,6 +87,8 @@ const loading = (state = {
       ...state,
       isLoading: false
     };
+  default: 
+    return state;
   } 
 }
 

@@ -30,8 +30,12 @@ class LibraryPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.permissions.length !== nextProps.permissions.length) {
-      let bookAddress = nextProps.permissions[nextProps.permissions.length]
+      let bookAddress = nextProps.permissions[nextProps.permissions.length-1]
       let permittedBook = this.props.books.filter(book => book.bookAddress === bookAddress)[0]
+      console.log(bookAddress)
+      console.log(nextProps)
+      console.log(this.props.books.filter(book => book.bookAddress === bookAddress))
+      console.log(permittedBook)
       window.location.replace(permittedBook.url)
     }
   }
@@ -121,7 +125,7 @@ class LibraryPage extends Component {
 
     if (found.length > 0) {
       return 'Borrowed';
-    } else if (book.availableInstances.length > 0) {
+    } else if (book.availableInstances > 0) {
       return 'Available';
     } else {
       return 'Booked out';

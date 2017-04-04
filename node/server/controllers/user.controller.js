@@ -1,8 +1,9 @@
 import User from '../models/user.model';
 import { libAddress } from '../../index';
 import contracts from '../helpers/contracts';
-
-import { JSEncrypt } from 'jsencrpt';
+import NodeRSA from 'node-rsa';
+import crypto from 'crypto';
+import constants from 'constants';
 /**
  * Create new user
  * @property {string} req.body.email - The email of user.
@@ -18,17 +19,6 @@ function create(req, res, next) {
   user.save()
     .then(savedUser => res.json(savedUser))
     .catch(e => next(e));
-}
-
-function setPublicKey(req, res, next) {
-  console.log(req.user)
-  User.get(req.user.email).then((user) => {
-    console.log(user)
-    user.publicKey = req.body.publicKey;
-    user.save()
-  })
-  .then(updatedUser => res.json(updatedUser))
-  .catch(e => next(e))
 }
 
 function processLendRequest(req, res) {
@@ -65,13 +55,12 @@ function processReturnRequest(req, res) {
 }
 
 function processViewRequest(req, res) {
-  let decrypt = new JSEncrypt();
-  decrypt.setPublicKey(req.body.publicKey);
-  let decryptedMessage = decrypt.decrypt(bookAddress)
-  console.log(decryptedMessage)
+  let key = new NodeRSA(req.body.publicKey, 'pkcs8-public');
+
+  let decryptedMessage = key.decryptPublic(req.body.encryptedMessage, 'utf8')
 
   return contracts.libraryContract.at(libAddress).then( (instance) => {
-    return instance.hasAccessToInstance(req.user.email, req.body.publicKey, decryptedMessage, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
+    return instance.hasAccessToInstance(req.user.email, req.body.publicKey, decryptedM  essage, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
   })
   .then((transactionReceipt) => {
     console.log(transactionReceipt.logs)
@@ -97,4 +86,4 @@ function processBuyRequest(req, res) {
   })
 }
 
-export default { create, setPublicKey, processLendRequest, processReturnRequest, processBuyRequest };
+export default { create, processLendRequest, processReturnRequest, processBuyRequest, processViewRequest };

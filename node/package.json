@@ -60,7 +60,9 @@
     "method-override": "^2.3.5",
     "mongoose": "4.7.4",
     "morgan": "1.7.0",
+    "node-rsa": "0.4.2",
     "truffle-contract": "1.1.10",
+    "ursa": "0.9.4",
     "web3": "0.18.2",
     "winston": "2.3.0"
   },

@@ -17,9 +17,18 @@ export default {
   },
 
   // POST /api/users/lend
+  // POST /api/users/return
   lend: {
     body: {
       bookAddress: Joi.string().required(),
+      publicKey: Joi.string().required()
+    }
+  },
+
+ // GET /api/users/view
+  view: {
+    body: {
+      encryptedMessage: Joi.string().required(),
       publicKey: Joi.string().required()
     }
   },

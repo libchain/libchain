@@ -1,6 +1,7 @@
 import { CALL_API } from '../middleware/api';
-import keypair from 'keypair';
-import { JSEncrypt } from 'jsencrpt';
+import cryptico from 'cryptico';
+import { JSEncrypt } from 'jsencrypt';
+import NodeRSA from 'node-rsa';
 import { getBorrowedBook } from '../reducers';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -22,9 +23,7 @@ const sendLogin = loginData => ({
 // Fetches a single user from Github API unless it is cached.
 // Relies on Redux Thunk middleware.
 export const login = (loginData) => (dispatch) => {
-  dispatch(sendLogin(loginData));
-  dispatch(generateKeyPair());
-  return dispatch(publicKey());
+  return dispatch(sendLogin(loginData));
 };
 
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
@@ -60,25 +59,6 @@ export const resetErrorMessage = () => ({
   type: RESET_ERROR_MESSAGE
 });
 
-export const GENERATE_KEY_PAIR = 'GENERATE_KEY_PAIR';
-
-export const generateKeyPair = () => ({
-  type: GENERATE_KEY_PAIR
-});
-
-export const SEND_KEY_REQUEST = 'SEND_KEY_REQUEST';
-export const SEND_KEY_SUCCESS = 'SEND_KEY_SUCCESS';
-export const SEND_KEY_FAILURE = 'SEND_KEY_FAILURE';
-
-const sendPublicKey = (publicKey) => ({
-  [CALL_API]: {
-    types: [ SEND_KEY_REQUEST, SEND_KEY_SUCCESS, SEND_KEY_FAILURE ],
-    verb: 'PUT',
-    endpoint: '/users/publicKey',
-    authentificate: true,
-    payload: publicKey
-  }
-});
 
 export const FETCH_BOOKS_REQUEST = 'FETCH_BOOKS_REQUEST';
 export const FETCH_BOOKS_SUCCESS = 'FETCH_BOOKS_SUCCESS';
@@ -145,9 +125,15 @@ export const UNREGISTER_BORROW = 'UNREGISTER_BORROW';
 
 
 export const borrowBook = (bookAddress) => (dispatch) => {
-  let bookKeypair = keypair();
+  let bookKeypair = new NodeRSA({ b: 512 })
 
-  dispatch(sendBorrowRequest(bookAddress, bookKeypair.public));
+  bookKeypair.setOptions({
+    environment: 'browser',
+    encryptionScheme: 'pkcs1'
+  })
+
+
+  dispatch(sendBorrowRequest(bookAddress, bookKeypair.exportKey('pkcs8-public-pem')));
 
   return dispatch(registerBorrow(bookAddress, bookKeypair));
 };
@@ -176,17 +162,18 @@ const sendReturnRequest = (bookAddress, publicKey) => ({
 export const returnBook = (bookAddress) => (dispatch, getState) => {
   let bookKeypair = getBorrowedBook(getState(), bookAddress).keypair;
 
-  dispatch(sendReturnRequest(bookAddress, bookKeypair.public));
+  dispatch(sendReturnRequest(bookAddress, bookKeypair.exportKey('pkcs8-public-pem')));
 
   return dispatch(unregisterBorrow(bookAddress));
 };
 export const VIEW_REQUEST = 'VIEW_REQUEST';
 export const VIEW_SUCCESS = 'VIEW_SUCCESS';
 export const VIEW_FAILURE = 'VIEW_FAILURE';
-const sendViewRequest = (encryptedMessage, publicKey) => {
+
+const sendViewRequest = (encryptedMessage, publicKey) => ({
   [CALL_API]: {
     types: [ VIEW_REQUEST, VIEW_SUCCESS, VIEW_FAILURE ],
-    verb: 'GET',
+    verb: 'POST',
     endpoint: 'users/view',
     authentificate: true,
     payload: {
@@ -194,16 +181,11 @@ const sendViewRequest = (encryptedMessage, publicKey) => {
       publicKey
     }
   }
-}
+})
 
 export const requestView = (bookAddress) => (dispatch, getState) => {
   let bookKeypair = getBorrowedBook(getState(), bookAddress).keypair;
-  let encrypt = new JSEncrypt();
-  encrypt.setPrivateKey(bookKeypair.private);
-  let encryptedMessage = encrypt.encrypt(bookAddress)
-  return dispatch(sendViewRequest(encryptedMessage, bookKeypair.public));
-};
-
-export const publicKey = () => (dispatch, getState) => {
-  return dispatch(sendPublicKey({ publicKey: getState().keyPair.publicKey }));
+  let encryptedMessage = bookKeypair.encryptPrivate(bookAddress, 'base64', 'utf8')
+  
+  return dispatch(sendViewRequest(encryptedMessage, bookKeypair.exportKey('pkcs8-public-pem')));
 };
