@@ -433,13 +433,13 @@ contract Library {
 		return true;
 	}
 
-    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (bool) {
-        if(sha3(pubkey) == sha3("")) return false;
+    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (uint) {
+        if(sha3(pubkey) == sha3("")) return 0;
 
         if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
-            return true;
+            return 1;
         }
-        return false;
+        return 0;
     }
 
 	function borrow(address bookContract, string publicKey, string userId) returns (bool) {
