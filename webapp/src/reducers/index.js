@@ -97,7 +97,11 @@ const permissions = (state = [], action) => {
 
   switch(type) {
   case ActionTypes.VIEW_SUCCESS:
-    return [ ...state, action.response.bookAddress ]
+    if (action.hasAccess) {
+      return [ ...state, action.response.bookAddress ]
+    }
+
+    return state;
   default:
     return state;
   }

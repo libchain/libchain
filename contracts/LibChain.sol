@@ -20,26 +20,25 @@ contract Book {
 		_isbn = id;
 	}
 
-	function getPublisher() returns (string) {
+	function getPublisher() constant returns (string) {
     return _publisher;
 	}
 
-	function getYear() returns (uint) {
+	function getYear() constant returns (uint) {
 		return _year;
 	}
 
-	function getGateway() returns (string) {
+	function getGateway() constant returns (string) {
 	 	return _gateway;
 	}
 
-	function getIsbn() returns (string) {
+	function getIsbn() constant returns (string) {
 	  return _isbn;
 	}
 
-	function getBookInfo() returns (uint, string, string, string, uint, address, address) {
+	function getBookInfo() constant returns (uint, string, string, string, uint, address, address) {
 	 	return (_year, _isbn, _gateway, _publisher, _balances[msg.sender], _owner, this);
 	}
-
 
 	function buy(address buyer, uint amount) {
 		_balances[buyer] += amount;
@@ -50,8 +49,6 @@ contract Book {
         metrics.addLoan(libAddress);
 	}
 
-
-
 	function transfer(address receiver, uint amount) returns(bool){
 		if(_balances[msg.sender] >= amount){
 			_balances[msg.sender] -= amount;
@@ -61,7 +58,7 @@ contract Book {
 		return false;
 	}
 
-    function getMetrics() returns(BookMetrics){
+    function getMetrics() constant returns(BookMetrics){
         return metrics;
     }
 
@@ -83,11 +80,11 @@ contract Publisher{
 		metrics = new PublisherMetrics();
 	}
 
-	function getName() returns(string) {
+	function getName() constant returns(string) {
         return name;
 	}
 
-	function getLocation() returns(string) {
+	function getLocation() constant returns(string) {
 		return location;
 	}
 	
@@ -107,15 +104,15 @@ contract Publisher{
 		metrics.addSoldBook(amount);
 	}
 
-	function getBooks() returns (Book[]) {
+	function getBooks() constant returns (Book[]) {
 		return publishedBooks;
 	}
 
-	function getBook(uint num) returns (address) {
+	function getBook(uint num) constant returns (address) {
         return publishedBooks[num];
 	}
 
-	function getMetrics() returns(PublisherMetrics){
+	function getMetrics() constant returns(PublisherMetrics){
 	    return metrics;
 	}
 }
@@ -162,27 +159,27 @@ contract PublisherMetrics{
         yearMetrics[year].months[month].sumOfSoldBookInstances +=numberOfInstances;
     }
 
-    function getSumOfSoldBooks() returns (uint){
+    function getSumOfSoldBooks() constant returns (uint){
         return sumOfSoldBookInstances;
     }
 
-    function getSumOfSoldBooks(uint year) returns (uint){
+    function getSumOfSoldBooks(uint year) constant returns (uint){
         return yearMetrics[year].sumOfSoldBookInstances;
     }
 
-    function getSumOfSoldBooks(uint year, uint month) returns (uint){
+    function getSumOfSoldBooks(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfSoldBookInstances;
     }
 
-    function getSumOfPublications() returns (uint){
+    function getSumOfPublications() constant returns (uint){
         return sumOfPublications;
     }
 
-    function getSumOfPublications(uint year) returns (uint){
+    function getSumOfPublications(uint year) constant returns (uint){
         return yearMetrics[year].sumOfPublications;
     }
 
-    function getSumOfPublications(uint year, uint month) returns (uint){
+    function getSumOfPublications(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfPublications;
     }
 }
@@ -233,37 +230,37 @@ contract BookMetrics{
         yearMetrics[year].months[month].sumOfLibLoans[libAddress] += 1;
     }
 
-    function getSumOfSoldInstances() returns (uint){
+    function getSumOfSoldInstances() constant returns (uint){
         return sumOfSoldInstances;
     }
 
-    function getSumOfSoldInstances(uint year) returns (uint){
+    function getSumOfSoldInstances(uint year) constant returns (uint){
         return yearMetrics[year].sumOfSoldInstances;
     }
 
-    function getSumOfSoldInstances(uint year, uint month) returns (uint){
+    function getSumOfSoldInstances(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfSoldInstances;
     }
 
-    function getSumOfLoans() returns (uint){
+    function getSumOfLoans() constant returns (uint){
         return sumOfLoans;
     }
 
-    function getSumOfLoans(uint year) returns (uint){
+    function getSumOfLoans(uint year) constant returns (uint){
         return yearMetrics[year].sumOfLoans;
     }
 
-    function getSumOfLoans(uint year, uint month) returns (uint){
+    function getSumOfLoans(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfLoans;
     }
 
-    function getSumOfLibLoans(uint year, uint month, address libAddress) returns (uint){
-            return yearMetrics[year].months[month].sumOfLibLoans[libAddress];
+    function getSumOfLibLoans(uint year, uint month, address libAddress) constant returns (uint){
+        return yearMetrics[year].months[month].sumOfLibLoans[libAddress];
     }
 
-    function getSumOfSoldInstancesToLib(uint year, uint month, address libAddress) returns (uint){
-                return yearMetrics[year].months[month].sumOfSoldInstancesToLib[libAddress];
-        }
+    function getSumOfSoldInstancesToLib(uint year, uint month, address libAddress) constant returns (uint){
+        return yearMetrics[year].months[month].sumOfSoldInstancesToLib[libAddress];
+    }
 }
 
 
@@ -313,47 +310,47 @@ contract LibraryMetrics{
     }
 
     function addReturn() {
-            uint year = datetime.getYear(now);
-            uint month = datetime.getMonth(now);
+        uint year = datetime.getYear(now);
+        uint month = datetime.getMonth(now);
 
-            sumOfReturns +=1;
-            yearMetrics[year].sumOfReturns += 1;
-            yearMetrics[year].months[month].sumOfReturns += 1;
+        sumOfReturns +=1;
+        yearMetrics[year].sumOfReturns += 1;
+        yearMetrics[year].months[month].sumOfReturns += 1;
     }
 
-    function getBoughtBookInstances() returns (uint){
+    function getBoughtBookInstances() constant returns (uint){
         return boughtBookInstances;
     }
 
-    function getBoughtBookInstances(uint year) returns (uint){
+    function getBoughtBookInstances(uint year) constant returns (uint){
         return yearMetrics[year].boughtBookInstances;
     }
 
-    function getBoughtBookInstances(uint year, uint month) returns (uint){
+    function getBoughtBookInstances(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].boughtBookInstances;
     }
 
-    function getSumOfLoans() returns (uint){
+    function getSumOfLoans() constant returns (uint){
         return sumOfLoans;
     }
 
-    function getSumOfLoans(uint year) returns (uint){
+    function getSumOfLoans(uint year) constant returns (uint){
         return yearMetrics[year].sumOfLoans;
     }
 
-    function getSumOfLoans(uint year, uint month) returns (uint){
+    function getSumOfLoans(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfLoans;
     }
 
-    function getSumOfReturns() returns (uint){
+    function getSumOfReturns() constant returns (uint){
         return sumOfReturns;
     }
 
-    function getSumOfReturns(uint year) returns (uint){
+    function getSumOfReturns(uint year) constant returns (uint){
         return yearMetrics[year].sumOfReturns;
     }
 
-    function getSumOfReturns(uint year, uint month) returns (uint){
+    function getSumOfReturns(uint year, uint month) constant returns (uint){
         return yearMetrics[year].months[month].sumOfReturns;
     }
 
@@ -396,23 +393,23 @@ contract Library {
 		metrics = new LibraryMetrics();
 	}
 
-	function getBooks() returns (Book[]) {
+	function getBooks() constant returns (Book[]) {
 		return _libBooks;
 	}
 
-	function getAvailableInstances(address book) returns (uint){
+	function getAvailableInstances(address book) constant returns (uint){
         return inventory[book].availableInstances;
 	}
 
-	function getNumberOfInstances(address book) returns (uint){
+	function getNumberOfInstances(address book) constant returns (uint){
 	    return inventory[book].amount;
 	}
 
-	function getNumberOfBooks() returns (uint){
+	function getNumberOfBooks() constant returns (uint){
 	    return _libBooks.length;
 	}
 
-	function getName() returns (string) {
+	function getName() constant returns (string) {
 		return name;
 	}
 
@@ -433,12 +430,15 @@ contract Library {
 		return true;
 	}
 
-    function hasAccessToInstance(string userId, string pubkey, address bookAddress) returns (uint) {
+    function hasAccessToInstance(string userId, string pubkey, address bookAddress) constant returns (uint) {
         if(sha3(pubkey) == sha3("")) return 0;
 
         if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
+            // has access
             return 1;
         }
+
+        // no access
         return 0;
     }
 
@@ -497,7 +497,7 @@ contract Library {
         return false;
     }
 
-    function getMetrics() returns(LibraryMetrics){
+    function getMetrics() constant returns(LibraryMetrics){
         return metrics;
     }
 
@@ -529,19 +529,19 @@ contract LibChain{
 		return publishers[pubNum-1];
 	}
 
-	function getLibrary(uint number) returns (address) {
+	function getLibrary(uint number) constant returns (address) {
 		return libraries[number];
 	}
 
-	function getPublisher(uint number) returns(address) {
+	function getPublisher(uint number) constant returns(address) {
 	    return publishers[number];
 	}
 
-	function getNumPublisher() returns (uint c) {
+	function getNumPublisher() constant returns (uint c) {
 	    return pubNum;
 	}
 
-	function getNumLibraries() returns (uint c) {
+	function getNumLibraries() constant returns (uint c) {
 	    return libNum;
 	}
 }
