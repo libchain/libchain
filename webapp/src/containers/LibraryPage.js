@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import shallowCompare from 'react-addons-shallow-compare';
 
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
@@ -12,7 +13,7 @@ import {
   TableRowColumn
 } from 'material-ui/Table';
 
-import { requestBooks, buyBook, lendBook } from '../actions';
+import { requestBooks, buyBook, borrowBook, returnBook, requestView } from '../actions';
 
 class LibraryPage extends Component {
   static propTypes = {
@@ -27,19 +28,32 @@ class LibraryPage extends Component {
     this.props.requestBooks(this.props.isAdmin)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.permissions.length !== nextProps.permissions.length) {
+      let bookAddress = nextProps.permissions[nextProps.permissions.length]
+      let permittedBook = this.props.books.filter(book => book.bookAddress === bookAddress)[0]
+      window.location.replace(permittedBook.url)
+    }
+  }
+
   handleAction(bookAddress, publisherAddress) {
     const { isAdmin } = this.props
     if (isAdmin) {
       this.props.buyBook(bookAddress, publisherAddress);
+      this.props.requestBooks(this.props.isAdmin);
       return;
     }
 
-    this.props.lendBook(bookAddress);
-    this.props.requestBooks(this.props.isAdmin)
+    this.props.borrowBook(bookAddress);
+    this.props.requestBooks(this.props.isAdmin);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.props.requestBooks(this.props.isAdmin)
+  handleReturn(bookAddress) {
+    this.props.returnBook(bookAddress)
+  }
+
+  handleView(bookAddress) {
+    this.props.requestView(bookAddress)
   }
 
   getTableColumnsNumber() {
@@ -65,16 +79,27 @@ class LibraryPage extends Component {
       </TableRow>
       );
     }
-
-    let headerColumns = (
+    let headerColumns = null;
+    if (isAdmin) {
+      headerColumns = (
           <TableRow>
             <TableHeaderColumn>Book ID</TableHeaderColumn>
             <TableHeaderColumn>Name</TableHeaderColumn>
-            { isAdmin ? <TableHeaderColumn>Publisher</TableHeaderColumn> : <TableHeaderColumn>Status</TableHeaderColumn> }
-            { isAdmin ? <TableHeaderColumn>In Store</TableHeaderColumn> : <div></div> }
+            <TableHeaderColumn>Publisher</TableHeaderColumn>
+            <TableHeaderColumn>In Store</TableHeaderColumn>
             { isLogged ? <TableHeaderColumn>Actions</TableHeaderColumn> : <div style={{display: 'none'}}></div>}
-          </TableRow>
-            )
+          </TableRow> 
+        )
+    } else {
+      headerColumns = (
+          <TableRow>
+            <TableHeaderColumn>Book ID</TableHeaderColumn>
+            <TableHeaderColumn>Name</TableHeaderColumn>
+            <TableHeaderColumn>Status</TableHeaderColumn>
+            { isLogged ? <TableHeaderColumn>Actions</TableHeaderColumn> : <div style={{display: 'none'}}></div>}
+          </TableRow> 
+        )
+    }
 
     let header = (
         <TableHeader
@@ -108,9 +133,9 @@ class LibraryPage extends Component {
     let isBorrowed = !isAdmin && borrowedBooks.map(borrowedBook => borrowedBook.bookAddress).indexOf(book.bookAddress) !== -1 
     let infoButton = <FlatButton label={"Info"} primary={true} />
     let buyLendButton = <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} onClick={this.handleAction.bind(this, book.bookAddress, book.publisherAddress)}/> 
-    let viewButton = <FlatButton label={"View"} primary={true} />
+    let viewButton = <FlatButton label={"View"} primary={true} onClick={this.handleView.bind(this, book.bookAddress)} />
     let returnButton =  isBorrowed ?
-            <FlatButton label={"Return"} primary={true} /> :
+            <FlatButton label={"Return"} primary={true} onClick={this.handleReturn.bind(this, book.bookAddress)} /> :
             <div></div>
     let mainActionButton = isBorrowed ? viewButton : buyLendButton;
 
@@ -153,7 +178,7 @@ class LibraryPage extends Component {
             <TableRowColumn>
               {book.libraryBalance}
             </TableRowColumn> :
-            <div></div>
+            <div style={{display: 'none'}}></div>
           }
           {button}
         </TableRow>
@@ -185,14 +210,9 @@ const mapStateToProps = (state, ownProps) => {
     books: state.books,
     isLogged: state.login.jwt !== null,
     borrowedBooks: state.borrowedBooks,
+    permissions: state.permissions,
     ...ownProps
   }
 }
-/*
-const mapDispatchToProps = (dispatch) => {
-  return {
-    requestBooks
-  }
-}*/
 
-export default connect(mapStateToProps, { requestBooks, lendBook, buyBook })(LibraryPage)
+export default connect(mapStateToProps, { requestBooks, borrowBook, buyBook, returnBook, requestView })(LibraryPage)

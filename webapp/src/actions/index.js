@@ -1,5 +1,7 @@
 import { CALL_API } from '../middleware/api';
 import keypair from 'keypair';
+import { JSEncrypt } from 'jsencrpt';
+import { getBorrowedBook } from '../reducers';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -140,17 +142,66 @@ const registerBorrow = (bookAddress, keypair) => ({
 
 export const UNREGISTER_BORROW = 'UNREGISTER_BORROW';
 
+
+
+export const borrowBook = (bookAddress) => (dispatch) => {
+  let bookKeypair = keypair();
+
+  dispatch(sendBorrowRequest(bookAddress, bookKeypair.public));
+
+  return dispatch(registerBorrow(bookAddress, bookKeypair));
+};
+
 const unregisterBorrow = (bookAddress) => ({
   type: UNREGISTER_BORROW,
   bookAddress
 })
+export const RETURN_REQUEST = 'RETURN_REQUEST'; 
+export const RETURN_SUCCESS = 'RETURN_SUCCESS'; 
+export const RETURN_FAILURE = 'RETURN_FAILURE';
 
-export const borrowBook = (bookAddress) => (dispatch) => {
-  let keypair = keypair();
+const sendReturnRequest = (bookAddress, publicKey) => ({
+  [CALL_API]: {
+    types: [ RETURN_REQUEST, RETURN_SUCCESS, RETURN_FAILURE ],
+    verb: 'POST',
+    endpoint: 'users/return',
+    authentificate: true,
+    payload: {
+      bookAddress,
+      publicKey
+    }
+  }
+});
 
-  dispatch(sendBorrowRequest(bookAddress, keypair.public));
+export const returnBook = (bookAddress) => (dispatch, getState) => {
+  let bookKeypair = getBorrowedBook(getState(), bookAddress).keypair;
 
-  return dispatch(registerBorrow(bookAddress, keypair));
+  dispatch(sendReturnRequest(bookAddress, bookKeypair.public));
+
+  return dispatch(unregisterBorrow(bookAddress));
+};
+export const VIEW_REQUEST = 'VIEW_REQUEST';
+export const VIEW_SUCCESS = 'VIEW_SUCCESS';
+export const VIEW_FAILURE = 'VIEW_FAILURE';
+const sendViewRequest = (encryptedMessage, publicKey) => {
+  [CALL_API]: {
+    types: [ VIEW_REQUEST, VIEW_SUCCESS, VIEW_FAILURE ],
+    verb: 'GET',
+    endpoint: 'users/view',
+    authentificate: true,
+    payload: {
+      encryptedMessage,
+      publicKey
+    }
+  }
+}
+
+export const requestView = (bookAddress) => (dispatch, getState) => {
+  let bookKeypair = getBorrowedBook(getState(), bookAddress).keypair;
+  let encrypt = new JSEncrypt();
+  encrypt.setPrivateKey(bookKeypair.private);
+  let encryptedMessage = encrypt.encrypt(bookAddress)
+  return dispatch(sendViewRequest(encryptedMessage, bookKeypair.public));
 };
 
 export const publicKey = () => (dispatch, getState) => {

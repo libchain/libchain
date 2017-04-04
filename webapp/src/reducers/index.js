@@ -69,6 +69,37 @@ const borrowedBooks = (state = [], action) => {
     return state;
   }
 }
+
+const loading = (state = {
+  isLoading: false
+}, action) => {
+  const { type } = action; 
+
+  switch(type) {
+  case ActionTypes.FETCH_BOOKS_REQUEST:
+    return {
+      ...state,
+      isLoading: true
+    };
+  case ActionTypes.FETCH_BOOKS_FAILURE:
+  case ActionTypes.FETCH_BOOKS_SUCCESS:
+    return {
+      ...state,
+      isLoading: false
+    };
+  } 
+}
+
+const permissions = (state = [], action) => {
+  const { type } = action;
+
+  switch(type) {
+  case ActionTypes.VIEW_SUCCESS:
+    return [ ...state, action.response.bookAddress ]
+  default:
+    return state;
+  }
+}
 // TODO: lend books should save the public keys into indexed db
 
 const books = (state = [], action) => {
@@ -108,8 +139,13 @@ const rootReducer = combineReducers({
   errorMessage,
   borrowedBooks,
   books,
+  permissions,
+  loading,
   routing
 });
 
+const getBorrowedBook = (state, bookAddress) => state.borrowedBooks.filter(borrowedBook => borrowedBook.bookAddress === bookAddress)[0]
+const getHasPermission = (state, bookAddress) => state.permissions.indexOf(bookAddress) !== -1;
+export { getBorrowedBook, getHasPermission };
 export default rootReducer;
 
