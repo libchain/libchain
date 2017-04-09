@@ -1,0 +1,93 @@
+\documentclass[bibtotoc,liststotoc,BCOR5mm,DIV12]{scrbook}
+
+% use this declaration to set specific page margins
+%\usepackage[a4paper , lmargin = {2.7cm} , rmargin = {2.9cm} , tmargin = {2.7cm} , bmargin = {4.6cm} ]{geometry}
+\usepackage[a4paper]{geometry}
+
+\usepackage[english]{babel}
+\usepackage{bibgerm}       		% german references
+\usepackage[numbers,round]{natbib}
+\usepackage[utf8]{inputenc} % german characters
+\usepackage{graphicx} 				% it's recommended to use PDF images but you can use JPG or PNG as well
+\usepackage{url}           		% format URLs
+\usepackage{hyperref} 				% create hyperlinks
+\usepackage{listings, color}	% for source code
+\usepackage{subfig}						% two figures next to each other (example: figure 3a), figure 3b)
+\usepackage{scrpage2}					% header and footer line
+\usepackage{courier}
+\usepackage{float}
+\restylefloat{table}
+\usepackage{tabularx} % in the preamble
+%\usepackage{enumitem}
+\usepackage{placeins}
+
+% header and footer line - no header & footer line on pages where a new chapter starts
+\pagestyle{scrheadings}
+\ohead{LibChain}
+
+\ihead{Cabello, Janßen, Mühle}
+\ofoot[]{\thepage}
+\ifoot{Projektbericht, TU Berlin, CIT, 2017}
+
+% set path where images are stored
+\graphicspath{{./img/}}
+
+\input{./misc/hyphenation} 					% use this file to set explicit hyphenations (doesn't seem to work correctly)
+
+\begin{document}
+% ---------------------------------------------------------------
+\frontmatter
+    \include{./misc/titlepage}
+   	\thispagestyle{empty}
+%    \cleardoublepage
+    
+%    \include{./misc/thanx}
+%    \thispagestyle{empty}
+%    \cleardoublepage
+    
+%    \include{./misc/self-assertion} 
+%    \thispagestyle{empty}
+%    \cleardoublepage
+    
+    
+%    \include{./misc/abstract}
+%    \thispagestyle{empty}
+%    \cleardoublepage
+    
+%    \include{./misc/abstract_de}
+%    \thispagestyle{empty}
+    
+    
+    \tableofcontents
+    \thispagestyle{empty}
+    
+    \listoffigures
+    \thispagestyle{empty}
+    
+    \listoftables
+    \thispagestyle{empty}
+    
+% --------------------------------------------------------------
+
+\mainmatter % comment single chapters for faster compilation
+
+    \input{./chapters/chapter1}
+%    \input{./chapters/chapter2}
+%    \input{./chapters/chapter3}
+%    \input{./chapters/chapter4}
+%    \input{./chapters/chapter5}
+%    \input{./chapters/chapter7}
+
+% ---------------------------------------------------------------
+\backmatter % no page numbering from here
+%    \input{./misc/acronyms}
+		
+		% if you want to provide a glossary with explanations of important terms put it in here
+
+    %\bibliographystyle{abbrvdin}
+    %\bibliography{./bib/references}
+
+    %\renewcommand{\thesection}{\Alph{section}}
+    %\input{./misc/annex}
+
+\end{document}
