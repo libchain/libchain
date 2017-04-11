@@ -16,16 +16,16 @@ The implementation of our research prototype is based on the open source blockch
 \imp{muss noch angepasst werden !!!}
 \chapter{Blockchain Technology\label{cha:chapter1}}
 
-A blockchain is a distibuted database that stores informations on linked blocks. To ensure the integrity of the information, every block includes a hash value of its previous block. Modifications on a confirmed block would leed to a different hashvalue. Therefore, manipulating informations on a blockchain is very hard and provides a high level of reliability.
-Informations are stored on the blockchain through transactions. The validity of transactions are verified by miners and are bundeled up to blocks.
+A blockchain is a distibuted database that stores informations on linked blocks. To ensure the integrity of the information, every block includes a hash value of its previous block and a Merkel Root of all transactions in the block. Modifications on a confirmed block would lead to a different hashvalue. Therefore, manipulating informations on a blockchain is very hard and provides a high level of reliability.
+Informations are stored on the blockchain through transactions. The validity of transactions are verified by miners and are bundeled up to blocks. Miners have to provide a Proof-of-Work in order for their verification of a new block to be accepted by the rest of the network. The chain of blocks with the most amount of Proof-of-Work is where new blocks should be added to. 
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{blockchain.jpg}\footnote{(http://bitcoin.stackexchange.com/questions/35448/is-it-chain-of-headers-rather-than-a-chain-of-blocks)}
 
-Blockchains became mainly known in financial context. The first implementation of a blockchain was used by Bitcoin, a virtual distributed currency.
-But in the meantime, blockchain technology has become also popular in other domains e.g. Voting-Systems \impp{ref} or for digital identity \impp{ref}. Applications that needs a high level of integrity and reliablilty could benefit from blockchains.
+Blockchains became mainly known in a financial context. The first implementation of a blockchain was used by Bitcoin, a virtual distributed crypto currency.
+But in the meantime, blockchain technology has also become popular in other domains i.e. Voting-Systems \ref{yermack2017corporate} or for digital identity management \ref{isaen}. Applications that needs a high level of integrity and reliablilty could benefit from blockchains.
 
-\imp{not finished}
+\imp{not finished, refs dont work?}
 
 
 %\begin{itemize}
@@ -35,10 +35,10 @@ But in the meantime, blockchain technology has become also popular in other doma
 %\end{itemize}
 
 \section{Ethereum}
-Ethereum is a public blockchain we used for LibChain, that allows to implement decentralized applications by means of "Smart Contracts". A smart contract is exectuable code that is stored on the blockchain. It is accessible through a unique address and triggered through transaction calls.
-To execute a transaction it has to be charged with gas. Gas is the fuel that is being used to pay the execution fee of the transaction\footnote{\url{http://www.reddit.com/r/ethereum/comments/2udvau/what_is_the_difference_between_gas_and_ether/}}.
+Ethereum is a public blockchain we used for LibChain, that allows us to implement decentralized applications by means of "Smart Contracts". A smart contract is exectuable code that is stored on the blockchain. It is accessible through a unique address and triggered through transaction calls.
+To execute a transaction so called gas is consumed. Gas is the fuel that is being used to pay the execution fee of the transaction\footnote{\url{http://www.reddit.com/r/ethereum/comments/2udvau/what_is_the_difference_between_gas_and_ether/}}.
 
-The programming language to implement contracts is called \textit{Solidity}. It's a high-level programming language whose syntax is similar to JavaScript. Contracts are collections of functions and variables:
+The programming language to implement contracts is called \textit{Solidity}. It's a high-level turing complete programming language whose syntax is similar to JavaScript. Contracts are collections of functions and variables:
 
 \begin{lstlisting}
 contract SimpleStorage {
@@ -55,4 +55,4 @@ contract SimpleStorage {
 \end{lstlisting}\footnote{\url{http://solidity.readthedocs.io/en/develop/introduction-to-smart-contracts.html}}
 
 
-Mining a block on the Ethereum chain involves to check that exactly the code was executed, how it was deployed on the chain. Due this transparency, it's easy to implement applications where normally a high level of trust between participants is needed.
+Mining a block on the Ethereum blockchain involves verification that exactly the deployed code was executed without tempering or inconsistencies between versions. Due to this transparency, it's easy to implement applications where normally a high level of trust between participants is needed.

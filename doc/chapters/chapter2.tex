@@ -1,6 +1,6 @@
 \chapter{LibChain}
 \section{Architecture Overview}
-The main architecture of LibChain is divided into three parts: React that is used to implement a prototypical library page, NodeJs that provides a REST interface that enables the connection to the frontend and the ethereum blockchain where the LibChain contracts are deployed on. Communication between the NodeJs backend and the blockchain are realized through the \texttt{Web3.js} api.
+The main architecture of LibChain is divided into three parts: React which is used to implement a prototypical library page, NodeJs that provides a REST interface that enables the connection to the frontend and the ethereum blockchain where the LibChain contracts are deployed on. Communication between the NodeJs backend and the blockchain are realised through the \texttt{Web3.js} API.
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{architecture.jpg}
@@ -11,13 +11,13 @@ The main architecture of LibChain is divided into three parts: React that is use
 
 
 \section{Smart Contracts}
-LibChain implements contracts for publisher, libraries and books that provides functionality to publish, buy and lend books in the LibChain ecosystem.
+LibChain implements contracts for publishers, libraries and books that provide functionality to publish, buy and lend books in the LibChain ecosystem.
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{contracts.png}
 
 \subsection{LibChain}
-The LibChain contract collects the available libraries and publisher. It provides functions to create new instances of publishers and libraries.
+The LibChain contract collects the available libraries and publisher. It provides functions to create new instances of publishers and libraries, as well as discover existing ones. It acts as a central starting point into the LibChain ecosystem for service providers specificially libraries and publishers.
 
 \subsection{Book}
 \begin{lstlisting}
