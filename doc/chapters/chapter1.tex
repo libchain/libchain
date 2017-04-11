@@ -20,7 +20,11 @@ A blockchain is a distibuted database that stores informations on linked blocks.
 Informations are stored on the blockchain through transactions. The validity of transactions are verified by miners and are bundeled up to blocks. Miners have to provide a Proof-of-Work in order for their verification of a new block to be accepted by the rest of the network. The chain of blocks with the most amount of Proof-of-Work is where new blocks should be added to. 
 
 \vspace{0.3cm}
-\includegraphics[width=\textwidth]{blockchain.jpg}\footnote{(http://bitcoin.stackexchange.com/questions/35448/is-it-chain-of-headers-rather-than-a-chain-of-blocks)}
+\begin{figure}[ht]
+  \centering
+   \includegraphics[width=\textwidth]{blockchain.jpg}
+  	\caption{Simplified Bitcoin Block Chain}
+\end{figure}
 
 Blockchains became mainly known in a financial context. The first implementation of a blockchain was used by Bitcoin, a virtual distributed crypto currency.
 But in the meantime, blockchain technology has also become popular in other domains i.e. Voting-Systems \cite{yermack2017corporate} or for digital identity management \cite{isaen}. Applications that needs a high level of integrity and reliablilty could benefit from blockchains.
@@ -29,8 +33,8 @@ But in the meantime, blockchain technology has also become popular in other doma
 Ethereum is a public blockchain we used for LibChain, that allows us to implement decentralized applications by means of "Smart Contracts". A smart contract is exectuable code that is stored on the blockchain. It is accessible through a unique address and triggered through transaction calls.
 To execute a transaction so called gas is consumed. Gas is the fuel that is being used to pay the execution fee of the transaction\footnote{\url{http://www.reddit.com/r/ethereum/comments/2udvau/what_is_the_difference_between_gas_and_ether/}}.
 
-The programming language to implement contracts is called \textit{Solidity}. It's a high-level turing complete programming language whose syntax is similar to JavaScript. Contracts are collections of functions and variables:
-
+The programming language to implement contracts is called \textit{Solidity}. It's a high-level turing complete programming language whose syntax is similar to JavaScript. Contracts are collections of functions and variables\footnote{\url{http://solidity.readthedocs.io/en/develop/introduction-to-smart-contracts.html}}:
+\vspace{0.3cm}
 \begin{lstlisting}
 contract SimpleStorage {
     uint storedData;
@@ -43,7 +47,6 @@ contract SimpleStorage {
         return storedData;
     }
 }
-\end{lstlisting}\footnote{\url{http://solidity.readthedocs.io/en/develop/introduction-to-smart-contracts.html}}
-
-
+\end{lstlisting}
+\vspace{0.3cm}
 Mining a block on the Ethereum blockchain involves verification that exactly the deployed code was executed without tempering or inconsistencies between versions. Due to this transparency, it's easy to implement applications where normally a high level of trust between participants is needed.
