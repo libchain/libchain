@@ -229,7 +229,7 @@ The contract checks the availability of the requested book instances and stores 
 
 \section{How to implement a Publisher Service?}
 In order to implement a publishing service several functions in the Ethereum Smart Contract \textit{Publisher} have to be called. \\
-An instance of the Publisher contract is initiated by calling the \\
+An instance of the Publisher contract is created by calling the \\
  \verb|function newPublisher(string name, string location)| of the LibChain contract. This will return an address that represents the newly created Publisher and can be used further to instantiate the Publisher. Since the LibChain contract holds a record of all registered Publishers other Libraries can now discover the newly created Publisher at any time. Additionally they can listen to the \\
  \verb|event NewPublisher(address newPublisher| to be notified of new Publishers.
 \subsection{Publishing a Book}
