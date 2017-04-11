@@ -1,6 +1,10 @@
 import contracts from '../helpers/contracts';
 import { libAddress, libInstance, libChainInstance} from '../../index';
 
+function getStatistics(req, res) {
+  return 0;
+}
+
 function getLibBooks(req, res) {
   var books = [];
   var libBooks = libInstance.getBooks.call({ from: contracts.web3.eth.accounts[0], gas: 1000000 });

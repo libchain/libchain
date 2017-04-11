@@ -74,15 +74,17 @@ const loading = (state = {
   isLoading: false
 }, action) => {
   const { type } = action; 
+  const splittedTypeText = type.split('_').reverse()
+  const typeOfAction = splittedTypeText[0]
 
-  switch(type) {
-  case ActionTypes.FETCH_BOOKS_REQUEST:
+  switch(typeOfAction) {
+  case 'REQUEST':
     return {
       ...state,
       isLoading: true
     };
-  case ActionTypes.FETCH_BOOKS_FAILURE:
-  case ActionTypes.FETCH_BOOKS_SUCCESS:
+  case 'FAILURE':
+  case 'SUCCESS':
     return {
       ...state,
       isLoading: false
@@ -90,6 +92,42 @@ const loading = (state = {
   default: 
     return state;
   } 
+}
+
+const statistics = (state = {
+  library: {},
+  publishers: []
+}, action) => {
+  const { type } = action;
+
+  switch(type) {
+  case ActionTypes.FETCH_STATISTICS_SUCCESS:
+    return {
+      library: action.response.library,
+      publishers: action.response.publishers
+    }
+  default: 
+    return state;
+  }
+}
+
+const infoFromBook = (state = {
+    name: '',
+    soldInstances: 0,
+    loans: 0
+}, action) => {
+  const { type } = action;
+
+  switch(type) {
+  case ActionTypes.FETCH_INFO_SUCCESS:
+    return {
+      name: action.response.name,
+      soldInstances: action.response.soldInstances,
+      loans: action.response.loans
+    }
+  default:
+    return state;
+  }
 }
 
 const permissions = (state = [], action) => {
@@ -146,7 +184,9 @@ const rootReducer = combineReducers({
   borrowedBooks,
   books,
   permissions,
+  infoFromBook,
   loading,
+  statistics,
   routing
 });
 

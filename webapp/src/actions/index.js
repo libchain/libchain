@@ -189,3 +189,38 @@ export const requestView = (bookAddress) => (dispatch, getState) => {
   
   return dispatch(sendViewRequest(encryptedMessage, bookKeypair.exportKey('pkcs8-public-pem')));
 };
+
+export const FETCH_STATISTICS_REQUEST = 'FETCH_STATISTICS_REQUEST';
+export const FETCH_STATISTICS_SUCCESS = 'FETCH_STATISTICS_SUCCESS';
+export const FETCH_STATISTICS_FAILURE = 'FETCH_STATISTICS_FAILURE';
+
+const sendLibraryAndPublisherStatisticsRequest = () => ({
+  [CALL_API]: {
+    types: [ FETCH_STATISTICS_REQUEST, FETCH_STATISTICS_SUCCESS, FETCH_STATISTICS_FAILURE ],
+    verb: 'GET',
+    endpoint: 'statistics'
+  }
+});
+
+export const requestLibraryAndPublisherStatistics = () => (dispatch) => {
+  return dispatch(sendLibraryAndPublisherStatisticsRequest());
+}
+
+export const FETCH_INFO_REQUEST = 'FETCH_INFO_REQUEST';
+export const FETCH_INFO_SUCCESS = 'FETCH_INFO_SUCCESS';
+export const FETCH_INFO_FAILURE = 'FETCH_INFO_FAILURE';
+
+const sendBookStatisticsRequest = (bookAddress) => ({
+  [CALL_API]: {
+    types: [ FETCH_INFO_REQUEST, FETCH_INFO_SUCCESS, FETCH_INFO_FAILURE ],
+    verb: 'POST',
+    endpoint: 'books/statistics',
+    payload: {
+      bookAddress
+    }
+  }
+});
+
+export const requestBookStatistics = (bookAddress) => (dispatch) => {
+  return dispatch(sendBookStatisticsRequest(bookAddress));
+};

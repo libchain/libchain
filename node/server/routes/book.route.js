@@ -9,6 +9,9 @@ router.route('/')
   /** GET /api/books - Fetches lib books */
   .get(bookCtrl.getLibBooks);
 
+router.route('/statistics')
+  .post(bookCtrl.getStatistics)
+
 router.route('/testpurchase')
 
 /** GET /api/books - Fetches lib books */

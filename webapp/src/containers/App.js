@@ -92,6 +92,15 @@ class App extends Component {
     )
   }
 
+  handleNav = (destination) => {
+    let path = '';
+    path = destination === 'books' ? '/library' : '/statistics'
+
+    browserHistory.push(path)
+
+    this.toggleDrawer()
+  }
+
   constructor(props) {
     super(props)
 
@@ -104,7 +113,7 @@ class App extends Component {
       <div>
         <AppBar
           title="LibChain"
-          showMenuIconButton={false}
+          onLeftIconButtonTouchTap={this.toggleDrawer.bind(this)}
           iconElementRight={this.props.isLogged ? <LogOut /> : <FormDialogMenu openDialog={this.openDialog.bind(this)} />}
         />
         <Drawer 
@@ -113,7 +122,9 @@ class App extends Component {
           onRequestChange={(open) => this.setState({ isDrawerOpen: open })}
         >
           <Subheader>Options</Subheader>
-          <MenuItem onTouchTap={this.handleKeyPairGeneration}>Generate Key Pair</MenuItem>
+          <MenuItem onTouchTap={this.handleNav.bind(this, 'libraryBooks')}>Books</MenuItem>
+          <MenuItem onTouchTap={this.handleNav.bind(this, 'adminBooks')}>Admin</MenuItem>
+          <MenuItem onTouchTap={this.handleNav.bind(this, 'statistics')}>Statistics</MenuItem>
         </Drawer>
         <hr />
         <FormDialog type='logIn' shouldBeOpen={this.state.logIn && !this.props.isLogged}/>
@@ -127,7 +138,8 @@ class App extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
   errorMessage: state.errorMessage,
-  isLogged: state.login.jwt !== null
+  isLogged: state.login.jwt !== null,
+  ...ownProps
 })
 
 export default connect(mapStateToProps, {

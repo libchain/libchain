@@ -19,4 +19,10 @@ router.use('/auth', authRoutes);
 // mount book routes at /books
 router.use('/books', bookRoutes);
 
+router.get('/statistics', fetchStatistics);
+
+const fetchStatistics = () => {
+  return 0;
+}
+
 export default router;
