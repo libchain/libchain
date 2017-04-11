@@ -1,4 +1,7 @@
 \chapter{LibChain}
+LibChain should allows to create contracts between publisher and libraries that differ from the classical subscription models for digital media. 
+
+
 \section{Architecture Overview}
 The main architecture of LibChain is divided into three parts: React that is used to implement a prototypical library page, NodeJs that provides a REST interface that enables the connection to the frontend and the ethereum blockchain where the LibChain contracts are deployed on. Communication between the NodeJs backend and the blockchain are realized through the \texttt{Web3.js} api.
 
@@ -11,15 +14,19 @@ The main architecture of LibChain is divided into three parts: React that is use
 
 
 \section{Smart Contracts}
-LibChain implements contracts for publisher, libraries and books that provides functionality to publish, buy and lend books in the LibChain ecosystem.
+LibChain implements smart contracts for publisher, libraries and books that provides functionality to publish, buy and lend books in the LibChain ecosystem. 
+
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{contracts.png}
 
 \subsection{LibChain}
-The LibChain contract collects the available libraries and publisher. It provides functions to create new instances of publishers and libraries.
+The LibChain contract is used to instantiate new libraries and publisher. It also provides getters for retrieving existent instances.
 
 \subsection{Book}
+The Book contract collects meta-informations like title and year of publication. It also has a field \textit{gateway} that defines the access point to the digital media (for example a link to the publishers book repository). It also contains the publisher address where an instance could be bought. Furthermore it contains some variables to get books statistics, e.g. the amount of sold instances or loans.
+
+
 \begin{lstlisting}
 contract Book {
 
@@ -56,7 +63,7 @@ contract Book {
 \end{lstlisting}
 
 \subsection{Publisher}
-The publisher contract allows to instantiate new books and add them to the publishers catalogue.
+The publisher contract allows to instantiate new books and add them to the publishers catalogue. It's primary used to publish books and sell instances to libraries.
 
 \begin{lstlisting}
 function publishBook(uint year, string id, string gate) returns(address bookContract){
@@ -67,9 +74,7 @@ function publishBook(uint year, string id, string gate) returns(address bookCont
 	}
 \end{lstlisting}
 
-As a Book is a smart contract, it get's a unique address. Therefore, a Library is able to call the \texttt{buyBook}-function to  
-
-
+As a Book is a smart contract, it get's a unique address. Therefore, a library is able to call the \texttt{buyBook}-function to get the ownership of permanent instances.
 
 \begin{lstlisting}
 	function buyBook(address bookContract, uint amount) constant {
@@ -82,6 +87,12 @@ As a Book is a smart contract, it get's a unique address. Therefore, a Library i
 \end{lstlisting}
 
 \subsection{Library}
+The library contract contains functions to buy book instances from publisher contracts and to perfom borrow and return requests.
+
+\paragraph*{buy}
+On a buy call, the publishers buy function is called to make a note for this purchase on the publishers site. This information could be used to pay the bill in the real world.
+Then the book with the requested amount of instances is stored in the libraries inventory and makes the lending possible to the library users ( see the borrow function ).
+
 \begin{lstlisting}
 	function buy(address bookContract, address publisherContract, uint amount) returns (bool) {
 		Publisher pub = Publisher(publisherContract);
@@ -100,21 +111,11 @@ As a Book is a smart contract, it get's a unique address. Therefore, a Library i
 	}
 \end{lstlisting}
 
-\begin{lstlisting}
-	    function hasAccessToInstance(string userId, string pubkey, address bookAddress) constant returns (uint) {
-        if(sha3(pubkey) == sha3("")) return 0;
 
-        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
-            // has access
-            return 1;
-        }
+\paragraph*{borrow}
+For borrowing books, it's first check whether an instance is currently available. In addition it's ensured that a user can only borrow one instance of a book at once.
 
-        // no access
-        return 0;
-    }
-\end{lstlisting}
-
-
+Then, the users public key is stored to the book object in the inventory. The public key is used for checking the access authorization of the user (see hasAccessToInstance function).
 
 \begin{lstlisting}
 function borrow(address bookContract, string publicKey, string userId) returns (bool) {
@@ -148,6 +149,27 @@ function borrow(address bookContract, string publicKey, string userId) returns (
 	}
 \end{lstlisting}
 
+\paragraph*{Access authorization}
+If a publisher gets a view-request, he can check the access authorization for this user. Here it's simply checked if a users public key is currently deposited in the book object in the library contract.
+The publisher has to verify the ownership of the apropriate private key by the user on service outsite the blockchain before (see \ref{sssec:access}).
+
+\begin{lstlisting}
+	    function hasAccessToInstance(string userId, string pubkey, address bookAddress) constant returns (uint) {
+        if(sha3(pubkey) == sha3("")) return 0;
+
+        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
+            // has access
+            return 1;
+        }
+
+        // no access
+        return 0;
+    }
+\end{lstlisting}
+
+
+\paragraph*{returnBook}
+To return a book, the public key entry is set to an empty string and the counter for availableInstances is increased by one.
 
 \begin{lstlisting}
 	function returnBook(address bookContract, string publicKey, string userId) returns (bool) {
@@ -176,14 +198,6 @@ function borrow(address bookContract, string publicKey, string userId) returns (
     }
 \end{lstlisting}
 
-%\begin{itemize}
-%\item buying books
-%\item lending books
-%\item provide confirmation methods for publishers, wheter a user has acces or not
-%\end{itemize}
-
-
-
 \section{Use Cases}
 %\begin{itemize}
 %\item short overview of use cases
@@ -201,7 +215,7 @@ function borrow(address bookContract, string publicKey, string userId) returns (
 \includegraphics[width=\textwidth]{borrow.png}
 
 
-\subsection{Access to digital media}
+\subsection{Access to digital media \label{sssec:access}}
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{access.png}
 
