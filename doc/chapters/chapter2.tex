@@ -217,13 +217,6 @@ The contract checks the availability of the requested book instances and stores 
 \includegraphics[width=\textwidth]{borrow.png}
 
 
-\subsection{Access to digital media \label{sssec:access}}
-If a user has borrowed a book, he can call the gateway-address that is stored in the book contract. That could be a normal internet address that routes the user to the publishers book service.
-The user can now create a view request by submitting the publickey (which he has submitted to the library on the borrow request) and the book id that he encrypts with the appropriate private key.
-
-By decrypting the book id with the submitted public key, the publisher can verify that the user is in possession of the private key. If this is successful, he can check that the public key is associated with a current loan of the book on the library. \imp{incomplete}
-
-
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{access.png}
 
@@ -246,4 +239,7 @@ Libraries that buy books from the Publisher will call the \\
 \verb|function buyBook(address bookContract, uint amount)|  in this function there is a mapping from library address (the buyer) to yet another mapping which is from book address to amount. This is essentially the mapping relevant for accounting. By calling the associated getter an invoice can be created for each library and each book respectively.\\
  \verb|function getBill(address library_, address book_) constant returns (uint)|
 \subsection{Access control}
+If a user has borrowed a book, he can call the gateway-address that is stored in the book contract. That could be a normal internet address that routes the user to the publishers book service.
+The user will then create a view request by submitting the publickey (which he has submitted to the library on the borrow request) and the book id that he encrypts with the appropriate private key.
 
+By decrypting the book id with the submitted public key, the publisher can verify that the user is in possession of the private key. If this is successful, he can check that the public key is associated with a current loan of the book on the library by calling the \verb|function hasAccessToInstance(string pubkey, address bookAddress)| which will return 0 if access is denied and 1 respectively if it is granted. \imp{incomplete}
