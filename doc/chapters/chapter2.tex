@@ -63,7 +63,7 @@ contract Book {
 \end{lstlisting}
 
 \subsection{Publisher}
-The publisher contract allows to instantiate new books and add them to the publishers catalogue. It's primary used to publish books and sell instances to libraries.
+The publisher contract allows to instantiate new books and add them to the publishers catalogue. It's primarily used to publish books and sell instances to libraries.
 
 \begin{lstlisting}
 function publishBook(uint year, string id, string gate) returns(address bookContract){
@@ -233,4 +233,17 @@ By decrypting the book id with the submitted public key, the publisher can verif
 \section{Metrics}
 
 \section{How to implement a Publisher Service?}
+In order to implement a publishing service several functions in the Ethereum Smart Contract \textit{Publisher} have to be called. \\
+An instance of the Publisher contract is initiated by calling the \\
+ \verb|function newPublisher(string name, string location)| of the LibChain contract. This will return an address that represents the newly created Publisher and can be used further to instantiate the Publisher. Since the LibChain contract holds a record of all registered Publishers other Libraries can now discover the newly created Publisher at any time. Additionally they can listen to the \\
+ \verb|event NewPublisher(address newPublisher| to be notified of new Publishers.
+\subsection{Publishing a Book}
+A potential publisher can call the\\ 
+ \verb|function publishBook(uint year, string id, string gate)| of their own Publisher contract. This will return an address of a new book contract and will also trigger the 
+ \verb|event PublishBook(address newBook)|
+\subsection{Selling a book}
+Libraries that buy books from the Publisher will call the \\
+\verb|function buyBook(address bookContract, uint amount)|  in this function there is a mapping from library address (the buyer) to yet another mapping which is from book address to amount. This is essentially the mapping relevant for accounting. By calling the associated getter an invoice can be created for each library and each book respectively.\\
+ \verb|function getBill(address library_, address book_) constant returns (uint)|
+\subsection{Access control}
 

@@ -95,18 +95,22 @@ contract Publisher{
 	function publishBook(uint year, string id, string gate) returns(address bookContract){
 		publishedBooks.push(new Book(name, year, id, gate));
 		bookNum++;
-		sumOfPublications;
+		sumOfPublications++;
 		// Event for publishing a book
 		PublishBook(publishedBooks[bookNum-1]);
 		return publishedBooks[bookNum-1];
 	}
 
-	function buyBook(address bookContract, uint amount) constant {
+	function buyBook(address bookContract, uint amount) {
 		Book book = Book(bookContract);
 		book.buy(msg.sender, amount);	
 		bills[msg.sender][bookContract] += amount;
 
 		sumOfSoldInstances += amount;
+	}
+
+	function getBill(address library_, address book_) constant returns(uint){
+		return bills[library_][book_];
 	}
 
 	function getBooks() constant returns (Book[]) {
@@ -201,13 +205,14 @@ contract Library {
 		return true;
 	}
 
-    function hasAccessToInstance(string userId, string pubkey, address bookAddress) constant returns (uint) {
+    function hasAccessToInstance(string pubkey, address bookAddress) constant returns (uint) {
         if(sha3(pubkey) == sha3("")) return 0;
-
-        if(sha3(users[userId].pubkeys[bookAddress]) == sha3(pubkey)){
-            // has access
-            return 1;
-        }
+	for(var i = 0; i < inventory[bookAddress].amount-1; i++){
+		if(sha3(inventory[bookAddress].pubkeys[i]) == sha3(pubkey)){
+		    // has access
+		    return 1;
+		}
+	}
 
         // no access
         return 0;
