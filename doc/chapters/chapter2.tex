@@ -1,23 +1,22 @@
 \chapter{LibChain}
-LibChain should allows to create contracts between publisher and libraries that differ from the classical subscription models for digital media. 
+LibChain allows users to create contracts between publisher and libraries that differ from the classical subscription models for digital media. 
 
 \section{Architecture Overview}
-The main architecture of LibChain is divided into three parts: React that is used to implement a prototypical library page, NodeJs that provides a REST interface that enables the connection to the frontend and the ethereum blockchain where the LibChain contracts are deployed on. Communication between the NodeJs backend and the blockchain are realized through the \texttt{Web3.js} api.
+The main architecture of LibChain is divided into three parts: React is used to implement a prototypical library page, NodeJs that provides a REST interface which enables the connection to the frontend and the Ethereum blockchain where the LibChain contracts are deployed on. Communication between the NodeJs backend and the blockchain are realised through the \texttt{Web3.js} api.
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{architecture.jpg}
 \section{Smart Contracts}
-LibChain implements smart contracts for publisher, libraries and books that provides functionality to publish, buy and lend books in the LibChain ecosystem. 
-
+LibChain implements smart contracts for publisher, libraries and books that provides functionality to publish, buy and lend books in the LibChain ecosystem as well as one LibChain contract that acts as a registery for all participating libraries and publishers.
 
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{contracts.png}
 
 \subsection{LibChain}
-The LibChain contract is used to instantiate new libraries and publisher. It also provides getters for retrieving existent instances.
+The LibChain contract is used to instantiate new libraries and publishers. It also provides getters for retrieving existing instances.
 
 \subsection{Book}
-The Book contract collects meta-informations like title and year of publication. It also has a field \textit{gateway} that defines the access point to the digital media (for example a link to the publishers book repository). It also contains the publisher address where an instance could be bought. Furthermore it contains some variables to get books statistics, e.g. the amount of sold instances or loans.
+The Book contract collects meta-informations like title and year of publication. It also has a field \textit{gateway} that defines the access point to the digital media (for example a link to the publishers book repository). It also contains the publisher address where an instance could be bought. Furthermore it contains some variables to get books statistics, e.g. the amount of sold instances or number of loans.
 
 
 \begin{lstlisting}
@@ -112,9 +111,9 @@ Then the book with the requested amount of instances is stored in the libraries 
 
 
 \paragraph*{Borrowing a book \label{sssec:contractborrow}}
-For borrowing books, it's first check whether an instance is currently available. In addition it's ensured that a user can only borrow one instance of a book at once.
+When borrowing a book the library first performs a check whether an instance of the requested book is available or not. In addition it is ensured that a user can only borrow one instance of a book at once. 
 
-Then, the users public key is stored to the book object in the inventory. The public key is used for checking the access authorization of the user (see \ref{sssec:contractaccess}).
+If both these conditions are met, the users public key used for this transaction is stored in the book object in the inventory. The public key is used for checking the access authorization of the user later on(see \ref{sssec:contractaccess}).
 
 \begin{lstlisting}
 function borrow(address bookContract, string publicKey, string userId) returns (bool) {
@@ -149,8 +148,8 @@ function borrow(address bookContract, string publicKey, string userId) returns (
 \end{lstlisting}
 
 \paragraph*{Access authorization \label{sssec:contractaccess}}
-If a publisher gets a view-request, he can check the access authorization for this user. Here it's simply checked if a users public key is currently deposited in the book object in the library contract.
-The publisher has to verify the ownership of the apropriate private key by the user on service outsite the blockchain before (see \ref{sssec:access}).
+If a publisher receives a view-request, he can check the access authorization for this user. Here it's simply checked if a users public key is currently deposited in the book object in the library contract.
+The publisher has to verify the ownership of the supplied keypair by the user with a service outside the blockchain beforehand  (see \ref{sssec:access}). 
 
 \begin{lstlisting}
 	    function hasAccessToInstance(string userId, string pubkey, address bookAddress) constant returns (uint) {
@@ -168,7 +167,7 @@ The publisher has to verify the ownership of the apropriate private key by the u
 
 
 \paragraph*{Return a Book}
-To return a book, the public key entry is set to an empty string and the counter for availableInstances is increased by one.
+To return a book, the public key entry of the patron for this book is deleted and the counter for availableInstances for the returned book in the inventory of the Library is increased by one again.
 
 \begin{lstlisting}
 	function returnBook(address bookContract, string publicKey, string userId) returns (bool) {
@@ -198,7 +197,7 @@ To return a book, the public key entry is set to an empty string and the counter
 \end{lstlisting}
 
 \section{Use Cases}
-The use case should demonstrate how to use the contract functions and on some use cases, how LibChain should be integrated in existent services of libraries and publishers.
+These use cases should demonstrate how to use the contract functions and how LibChain should be integrated in existing services of libraries and publishers.
 
 \subsection{Book-Purchase}
 \vspace{0.3cm}
@@ -214,10 +213,10 @@ The contract checks the availability of the requested book instances and stores 
 \end{center}
 
 \subsection{Access to digital media \label{sssec:access}}
-If a user has borrowed a book, he can call the gateway-address that is stored in the book contract. That could be a normal internet address that routes the user to the publishers book service.
-The user can now create a view request by submitting the publickey (which he has submitted to the library on the borrow request) and the book id that he encrypts with the appropriate private key.
+If a user has borrowed a book, he can call the gateway-address that is stored in the book contract. That could be a normal internet address that routes the user to the publishers book service. This enabled the publisher to implement his own level of DRM from a proprietary viewer solution to a simple pdf download.
+The user can now create a view request by submitting the publickey (which he has submitted to the library on the borrow request) and the book id that he encrypts with the appropriate private key to prove his identity.
 
-By decrypting the book id with the submitted public key, the publisher can verify that the user is in possession of the private key. If this is successful, he can check that the public key is associated with a current loan of the book on the library.
+By decrypting the book id and the associated nonce with the submitted public key, the publisher can verify that the user is in possession of the private key. If this is successful, he can check that the public key is associated with a current loan of the book in the library.
 
 
 \vspace{0.3cm}
@@ -234,7 +233,7 @@ An instance of the Publisher contract is created by calling the \\
  \verb|event NewPublisher(address newPublisher| to be notified of new Publishers.
 \subsection{Publishing a Book}
 A potential publisher can call the\\ 
- \verb|function publishBook(uint year, string id, string gate)| of their own Publisher contract. This will return an address of a new book contract and will also trigger the 
+ \verb|function publishBook(uint year, string id, string gate)| of their own Publisher contract. This will return an address of a new Book contract and will also trigger the 
  \verb|event PublishBook(address newBook)|
 \subsection{Selling a book}
 Libraries that buy books from the Publisher will call the \\
@@ -246,19 +245,19 @@ Libraries that buy books from the Publisher will call the \\
 \section{Problems and Limitations}
 \begin{itemize}
 \item \textbf{"out of gas" - problems}\\
-Instantiation of contracts and call of functions has to be charged with gas. While our implementation phase, we recognized that contracts needs to remain simple and lightweight. 
-For example: On our first approach, we tried to implement metrics arranged by date attributes (year and month). For this it would be necessary to do calculations on a unix timestamp to determine this data.
-But we rejected this idea, because the gas usage to call those functions were strongly increased. Furthermore the ethereum documentation to this topic is really poor and the execution of more complex contracts seems to be immature.
+Instantiations of contracts and calls of functions have to be fueled with gas. During our implementation phase, we recognised that contracts needed to remain simple and lightweight. 
+For example: On our first approach, we tried to implement metrics mapped by date attributes (year and month). For this it would be necessary to do calculations on a unix timestamp to determine this data.
+But we rejected this idea, because the gas usage to call these functions was extremely high. Furthermore the Ethereum documentation on this topic is fairly poor and the execution of more complex contracts seems to be premature for the technology.
 
 \item \textbf{long function call times}\\
-The call of function, no matter if constant or not, needs much time for response. It seems not feasible to use getters for displaying informations in the users frontend.
-For our prototype of a library page, we used getters from the library contract and the book contract to list the book inventory in the frontend for demonstration purposes. Though we only used (constant) getter functions, the response for circa ten book entries took more about fifteen seconds. For productive systems, we recommend to mirror those informations on a local database and only use the blockchain methods for data modifying transactions like borrow, return or buy requests.
+The call of functions, no matter if constant (calling the function wont result in a change of state) or not, needs considerable time to respond due to the block verification delays. It seems not feasible to use getters for displaying informations in the users frontend.
+For our prototype of a library page, we used getters from the Library contract and the Book contract to list the book inventory in the frontend for demonstration purposes. Though we only used (constant) getter functions, the response for circa ten book entries took more then fifteen seconds. For production systems, we recommend to mirror those information on a local database and only use the blockchain methods for data modifying transactions like borrow, return or buy requests.
 
 \item \textbf{unknown gas usage on function calls}\\
 Every non constant function call has to be paid with gas. But it is hard to say how much gas is needed by a transaction in advance. A possibility could be calculating this by means of the documentation of ethereum \cite{wood2014ethereum}. But this is very low level and not really practicable. 
 
 \item \textbf{mapping and array limitations}\\
-Data managment in contracts could be very cumbersome. The usual feature to iterate trough a hashmap, that we know from common programming languages is not possible with solidity.
+Data managment in contracts could be very cumbersome. The usual feature to iterate through a hashmap, that we know from common programming languages is not possible with solidity.
 
 To store user publickeys for borrowed books, we implemented following workaround:
 
@@ -286,14 +285,14 @@ We implemented a base prototype of LibChain, but there a some ideas we collected
 
 \begin{itemize}
 \item \textbf{Overflow lending}\\
-With LibChain we wanted to allow fairer and more accurate pricing models for publisher and library services. Currently it is possible for libraries to buy book instances similar to the puchase of books in the real world. It would also be nice to have a book access on demand. In this case, a library could lend a higher amount of instances of a book for a limited time and has not to buy instances forever.
+With LibChain we wanted to allow fairer and more accurate pricing models for publisher and library services. Currently it is possible for libraries to buy book instances similar to the puchase of books in the real world and sharing these resources with other LibChain libraries already provides a huge benefit but It would also be nice to have book access on demand. In this case, a library could lend a higher amount of instances of a book than it actually owns for a limited time and has not to buy it outright from the publisher but could pay a surge/overflow charge to the publisher instead. This would represent an attractive hybrid of the current subscription model for digital media and the pricing model for physical books at the moment.
 
 \item \textbf{Ether-Payments}\\
-In the current version, the libraries and publishers buy functions is without any limitations. Though it is guaranteed that the publisher can create valid invoices it would be desirable to implement payments directly in the cotnract nevertheless.
+In the current version, the libraries and publishers buy functions is without any limitations. Though it is guaranteed that the publisher can create valid invoices it would be desirable to implement payments directly through the contract itself by utilising the Ethereum crypto currency.
 
 \item \textbf{Direct user access to the blockchain}\\
 Library services currently have exclusive access to the data modifying functions on their contracts. They are acting for the user to execute borrow and return requests. The andvantage of this approach is, that users don't need to use the blockchain directly and old workflows and authentication systems of libraries can nearly remain unchanged.
-In an enhanced LibChain implementation, it could be possible that user acting with their own ethereum accounts on the blockchain without a direct intervention of the library service. The main function of the library would then to provide enough instances of books in the contract.
+In an enhanced LibChain implementation, it could be possible that user acting with their own Ethereum accounts on the blockchain without a direct intervention of the library service. The main function of the library would then to provide enough instances of books in the contract.
 
 \end{itemize}
 
