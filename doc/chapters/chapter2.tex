@@ -109,7 +109,7 @@ Then the book with the requested amount of instances is stored in the libraries 
 \end{lstlisting}
 
 
-\paragraph*{borrow}
+\paragraph*{borrow \label{sssec:contractborrow}}
 For borrowing books, it's first check whether an instance is currently available. In addition it's ensured that a user can only borrow one instance of a book at once.
 
 Then, the users public key is stored to the book object in the inventory. The public key is used for checking the access authorization of the user (see hasAccessToInstance function).
@@ -196,9 +196,8 @@ To return a book, the public key entry is set to an empty string and the counter
 \end{lstlisting}
 
 \section{Use Cases}
-%\begin{itemize}
-%\item short overview of use cases
-%\end{itemize}
+The use case should demonstrate how to use the contract functions and on some use cases, how LibChain should be integrated in existent services of libraries and publishers.
+
 \subsection{Book-Purchase}
 
 \vspace{0.3cm}
@@ -208,6 +207,10 @@ To return a book, the public key entry is set to an empty string and the counter
 %\item calling the buy method on library contract
 %\end{itemize}
 \subsection{Book-Borrow}
+To borrow a book, the user has to authenticate toward the library service on a classical way ( e.g. username/password). The library therefore knows, that the user is authorized to lend books. If the user wants to lend a book, he has to create a RSA-keypair. The private key is stored on the client site whereas the public key is submitted togehter with the book id to the library service.
+Since the user is already authenticated, the library can forward this request to the library contract without any further verification.
+The contract checks the availability of the requested book instances and stores the public key (see \ref{sssec:contractborrow}).
+
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{borrow.png}
 
