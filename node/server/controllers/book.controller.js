@@ -136,7 +136,7 @@ function buySomeBooksTest(req, res) {
   })
     .then((result) => {
       console.log("book " + result[0]+ " publisher : " + publisher.address);
-      return libInstance.buy(result[0], publisher.address, 5, { from: contracts.web3.eth.accounts[0], gas: 1000000 });
+      return libInstance.buy(result[0], publisher.address, 5, { from: contracts.web3.eth.accounts[0] , gas: 3000000});
     }) .then( result => {
       console.log(result);
       return res.json('ok')
