@@ -8,7 +8,7 @@ The main architecture of LibChain is divided into three parts: React that is use
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{architecture.jpg}
 \subsection{Backend}
-
+	%% truffle
 
 \subsection{Frontend}
 
@@ -29,14 +29,13 @@ The Book contract collects meta-informations like title and year of publication.
 
 \begin{lstlisting}
 contract Book {
-
 	address public _owner;
 	string public _publisher;
 	uint public _year;
 	string public _gateway;
 	string public _isbn;
-	
-	mapping (address => uint) public _balances;
+
+	//metrics
 	uint sumOfSoldInstances;
 	uint sumOfLoans;
   
@@ -49,13 +48,12 @@ contract Book {
 	}
 
 
-	function getBookInfo() constant returns (uint, string, string, 		string, uint, address, address) 
+	function getBookInfo() constant returns (uint, string, string, uint, address, address)
 	{
-	 	return (_year, _isbn, _gateway, _publisher, 	_balances[msg.sender], _owner, this);
+	 	return (_year, _isbn, _gateway, _publisher, _owner, this);
 	}
 
 	function buy(address buyer, uint amount) {
-		_balances[buyer] += amount;
 		sumOfSoldInstances++;
 	}
 
@@ -74,7 +72,7 @@ function publishBook(uint year, string id, string gate) returns(address bookCont
 	}
 \end{lstlisting}
 
-As a Book is a smart contract, it get's a unique address. Therefore, a library is able to call the \texttt{buyBook}-function to get the ownership of permanent instances.
+As a book is a smart contract, it get's a unique address. Therefore, a library is able to call the \texttt{buyBook}-function to get the ownership of permanent instances.
 
 \begin{lstlisting}
 	function buyBook(address bookContract, uint amount) constant {
@@ -86,12 +84,20 @@ As a Book is a smart contract, it get's a unique address. Therefore, a library i
 	}
 \end{lstlisting}
 
+If an account calls the buy function, the bookaddress and the amount of instances that should be bought is associated with the buyers address. The publisher can use this information later to invoice the libraries purchase.
+
+\begin{lstlisting}
+mapping(address => mapping(address => uint)) public bills;
+\end{lstlisting}
+
+The information is mapped on the first level to the library address and on the second level to the book address.
+
 \subsection{Library}
 The library contract contains functions to buy book instances from publisher contracts and to perfom borrow and return requests.
 
-\paragraph*{buy}
+\paragraph*{Buying books}
 On a buy call, the publishers buy function is called to make a note for this purchase on the publishers site. This information could be used to pay the bill in the real world.
-Then the book with the requested amount of instances is stored in the libraries inventory and makes the lending possible to the library users ( see the borrow function ).
+Then the book with the requested amount of instances is stored in the libraries inventory and makes the lending possible to the library users ( see ref{sssec:contractborrow} ).
 
 \begin{lstlisting}
 	function buy(address bookContract, address publisherContract, uint amount) returns (bool) {
@@ -112,7 +118,7 @@ Then the book with the requested amount of instances is stored in the libraries 
 \end{lstlisting}
 
 
-\paragraph*{borrow \label{sssec:contractborrow}}
+\paragraph*{Borrowing a book \label{sssec:contractborrow}}
 For borrowing books, it's first check whether an instance is currently available. In addition it's ensured that a user can only borrow one instance of a book at once.
 
 Then, the users public key is stored to the book object in the inventory. The public key is used for checking the access authorization of the user (see hasAccessToInstance function).
@@ -168,7 +174,7 @@ The publisher has to verify the ownership of the apropriate private key by the u
 \end{lstlisting}
 
 
-\paragraph*{returnBook}
+\paragraph*{Return a Book}
 To return a book, the public key entry is set to an empty string and the counter for availableInstances is increased by one.
 
 \begin{lstlisting}
@@ -204,24 +210,20 @@ The use case should demonstrate how to use the contract functions and on some us
 \subsection{Book-Purchase}
 \vspace{0.3cm}
 \includegraphics[width=\textwidth]{purchase.png}
-%\begin{itemize}
-%\item a library want's to buy some book instances
-%\item calling the buy method on library contract
-%\end{itemize}
 \subsection{Book-Borrow}
-To borrow a book, the user has to authenticate toward the library service on a classical way ( e.g. username/password). The library therefore knows, that the user is authorized to lend books. If the user wants to lend a book, he has to create a RSA-keypair. The private key is stored on the client site whereas the public key is submitted togehter with the book id to the library service.
+To borrow a book, the user has to authenticate toward the library service on a classical way (e.g. username/password). The library therefore knows, that the user is authorized to borrow books. If the user wants to borrow a book, he has to create a RSA-keypair. The private key is stored on the client site whereas the public key is submitted together with the book id to the library service.
 Since the user is already authenticated, the library can forward this request to the library contract without any further verification.
-The contract checks the availability of the requested book instances and stores the public key (see \ref{sssec:contractborrow}).
+The contract checks the availability of the requested book instances and stores the public key (see \ref{sssec:contractborrow}) to the contract storage.
 
 \vspace{0.3cm}
-\includegraphics[width=\textwidth]{borrow.png}
-
+\begin{center}
+\includegraphics[width=0.7\textwidth]{borrow.png}
+\end{center}
 
 \vspace{0.3cm}
-\includegraphics[width=\textwidth]{access.png}
-
-
-\subsection{Book-Return}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{access.png}
+\end{center}
 
 \section{Metrics}
 
@@ -243,3 +245,15 @@ If a user has borrowed a book, he can call the gateway-address that is stored in
 The user will then create a view request by submitting the publickey (which he has submitted to the library on the borrow request) and the book id that he encrypts with the appropriate private key.
 
 By decrypting the book id with the submitted public key, the publisher can verify that the user is in possession of the private key. If this is successful, he can check that the public key is associated with a current loan of the book on the library by calling the \verb|function hasAccessToInstance(string pubkey, address bookAddress)| which will return 0 if access is denied and 1 respectively if it is granted. \imp{incomplete}
+
+\section{Problems and Limitations}
+ % * out of gas and poor documentation
+ % * performance & confirmation times
+ % * unknown gas usage before function calls
+ % * solidity --> mapping / array limitations (iterability)
+ % 			--> example how we solved it in LibChain
+
+\section{Future Work}
+ % * overflow lending
+ % * credit for library accounts --> payments  for purchases 		with ether
+ % * user access directly on the blockchain -> without library
