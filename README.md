@@ -3,7 +3,7 @@
 
 ![alt text][logo]
 
-[logo]: https://github.com/adam-p/markdown-here/raw/master/webapp/public/libchain_logo.png "LibChain Logo"
+[logo]: https://github.com/libchain/libchain/raw/master/webapp/public/libchain_logo.png "LibChain Logo"
 
 ## Preliminaries
 
