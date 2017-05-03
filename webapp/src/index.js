@@ -8,6 +8,12 @@ import Root from './containers/Root';
 import configureStore from './store/configureStore';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import Dexie from 'dexie';
+
+export const db = new Dexie('LibChainClientDB');
+
+db.version(1).stores({ accounts: '++id,accountId,borrowedBooks' });
+
 
 const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)

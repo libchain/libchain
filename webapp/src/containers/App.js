@@ -94,8 +94,13 @@ class App extends Component {
 
   handleNav = (destination) => {
     let path = '';
-    path = destination === 'books' ? '/library' : '/statistics'
-
+    if (destination === 'statistics') {
+      path = '/statistics'
+    } else if (destination === 'adminBooks') {
+      path = '/library/admin'
+    } else {
+      path = '/library'
+    }
     browserHistory.push(path)
 
     this.toggleDrawer()
@@ -112,7 +117,7 @@ class App extends Component {
     return (
       <div>
         <AppBar
-          title="LibChain"
+          style={{backgroundColor: '#87ceed'}}
           onLeftIconButtonTouchTap={this.toggleDrawer.bind(this)}
           iconElementRight={this.props.isLogged ? <LogOut /> : <FormDialogMenu openDialog={this.openDialog.bind(this)} />}
         />

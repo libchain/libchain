@@ -2,7 +2,20 @@ import * as ActionTypes from '../actions';
 import { routerReducer as routing } from 'react-router-redux';
 import { combineReducers } from 'redux';
 
+import { db } from '../index';
+
 // Updates an entity cache in response to any action with response.entities.
+const signUp = (state = {}, action) => {
+  const {type} = action;
+
+  switch(type) {
+  case ActionTypes.CREATE_ACCOUNT_SUCCESS:
+    return state;
+  default: 
+    return state;
+  }
+}
+
 const login = (state = {
   jwt: null,
   isLoading: false
@@ -20,7 +33,8 @@ const login = (state = {
   case ActionTypes.LOGIN_SUCCESS:
     jwt = action.response.token;
     localStorage.setItem('loginToken', jwt);
-
+    localStorage.setItem('loggedPerson', action.response.email);
+    
     return {
       jwt,
       isLoading: false
@@ -45,13 +59,13 @@ const borrowedBook = (state = {
   bookAddress: '',
 }, action) => {
   const { type } = action;
-
+  let accountId = localStorage.getItem('loggedPerson')
   switch(type) {
-  case ActionTypes.REGISTER_BORROW: 
+  case ActionTypes.REGISTER_BORROW:
     return {
       keypair: action.keypair,
       bookAddress: action.bookAddress
-    }
+    } 
   default:
     return state;
   }
@@ -59,12 +73,20 @@ const borrowedBook = (state = {
 
 const borrowedBooks = (state = [], action) => {
   const { type } = action;
+  let accountId = localStorage.getItem('loggedPerson')
 
   switch(type) {
+  case ActionTypes.LOGIN_SUCCESS:
+    let loadedBooks = JSON.parse(localStorage.getItem(accountId))
+
+    return loadedBooks;
   case ActionTypes.REGISTER_BORROW:
-    return [ ...state, borrowedBook(undefined, action)];
+    let arrayWithNewBorrowedBook = [ ...state, borrowedBook(undefined, action)]
+    return arrayWithNewBorrowedBook;
   case ActionTypes.UNREGISTER_BORROW: 
-    return [ ...state.filter(borrowedBook => borrowedBook.bookAddress !== action.bookAddress) ]
+    let arrayWithoutBorrowedBook = [ ...state.filter(borrowedBook => borrowedBook.bookAddress !== action.bookAddress) ]
+
+    return arrayWithoutBorrowedBook;
   default: 
     return state;
   }
@@ -135,11 +157,11 @@ const permissions = (state = [], action) => {
 
   switch(type) {
   case ActionTypes.VIEW_SUCCESS:
-    if (action.hasAccess) {
+    // if (action.hasAccess) {
       return [ ...state, action.response.bookAddress ]
-    }
+    // }
 
-    return state;
+    // return state;
   default:
     return state;
   }

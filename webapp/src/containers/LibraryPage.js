@@ -15,6 +15,7 @@ import {
   TableRowColumn
 } from 'material-ui/Table';
 
+
 import { requestBooks, buyBook, borrowBook, returnBook, requestView, requestBookStatistics } from '../actions';
 
 class LibraryPage extends Component {
@@ -141,7 +142,7 @@ class LibraryPage extends Component {
   renderActionButtons(book) {
     const { isAdmin, borrowedBooks } = this.props
     let isBorrowed = !isAdmin && borrowedBooks.map(borrowedBook => borrowedBook.bookAddress).indexOf(book.bookAddress) !== -1 
-    let infoButton = <FlatButton label={"Info"} primary={true} onClick={this.handleOpenBookInfo.bind(this)} />
+    let infoButton = <FlatButton label={"Info"} primary={true} onClick={this.handleOpenBookInfo.bind(this, book.bookAddress)} />
     let buyLendButton = <FlatButton label={isAdmin ? "Buy" : "Lend"} primary={true} onClick={this.handleAction.bind(this, book.bookAddress, book.publisherAddress)}/> 
     let viewButton = <FlatButton label={"View"} primary={true} onClick={this.handleView.bind(this, book.bookAddress)} />
     let returnButton =  isBorrowed ?
@@ -196,8 +197,8 @@ class LibraryPage extends Component {
     }) 
   }
 
-  handleOpenBookInfo() {
-    this.requestBookStatistics()
+  handleOpenBookInfo(bookAddress) {
+    this.requestBookStatistics(bookAddress)
     this.setState({ showBookInfo: true })
   }
 

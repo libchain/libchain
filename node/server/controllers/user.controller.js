@@ -60,7 +60,7 @@ function processViewRequest(req, res) {
   let decryptedMessage = key.decryptPublic(req.body.encryptedMessage, 'utf8')
 
   return contracts.libraryContract.at(libAddress).then( (instance) => {
-    return instance.hasAccessToInstance(req.user.email, req.body.publicKey, decryptedMessage, { from: contracts.web3.eth.accounts[0], gas: 100000 })
+    return instance.hasAccessToInstance(req.user.email, req.body.publicKey, decryptedMessage, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
   })
   .then((transactionReceipt) => {
     console.log(transactionReceipt, transactionReceipt.logs)
@@ -76,7 +76,7 @@ function processBuyRequest(req, res) {
     }*/
 
     return contracts.libraryContract.at(libAddress).then( (instance) => {
-      return instance.buy(req.body.bookAddress, req.body.publisherAddress, 1, { from: contracts.web3.eth.accounts[0], gas: 100000 })
+      return instance.buy(req.body.bookAddress, req.body.publisherAddress, 1, { from: contracts.web3.eth.accounts[0], gas: 1000000 })
     })
     .then((transactionReceipt) => {
       console.log(transactionReceipt.logs)

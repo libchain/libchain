@@ -2,7 +2,16 @@ import contracts from '../helpers/contracts';
 import { libAddress, libInstance, libChainInstance} from '../../index';
 
 function getStatistics(req, res) {
-  return 0;
+  contracts.bookContract.at(req.body.bookAddress).then(instance => {
+    return instance.getMetrics.call();
+  })
+  .then(result => {
+    res.json({
+      name: result[2],
+      loans: result[1],
+      soldInstances: result[0]
+    })
+  })
 }
 
 function getLibBooks(req, res) {
@@ -143,7 +152,7 @@ function buySomeBooksTest(req, res) {
   });
 }
 
-function getAllPublishers(){
+export function getAllPublishers(){
   var publishers = getAllPublisherAddresses();
   console.log(publishers)
   return Promise.map(publishers, (publisherAddresses) =>
@@ -152,7 +161,7 @@ function getAllPublishers(){
 }
 
 
-function getAllPublisherAddresses() {
+export function getAllPublisherAddresses() {
   var publisherAddresses = [];
 
   return getNumberOfPublishers().then(function (numberOfBooks) {
@@ -171,9 +180,9 @@ function getAllPublisherAddresses() {
 
 }
 
-function getNumberOfPublishers() {
+export function getNumberOfPublishers() {
   return libChainInstance.getNumPublisher.call();
 }
 
 
-export default {getLibBooks, getAllPubBooks, getAllPublisherAddresses, buySomeBooksTest};
+export default {getStatistics, getLibBooks, getAllPubBooks, getAllPublisherAddresses, buySomeBooksTest};

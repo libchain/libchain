@@ -58,6 +58,10 @@ contract Book {
 		return false;
 	}
 
+    function getMetrics() returns (uint, uint, string) {
+        return (sumOfSoldInstances, sumOfLoans, _isbn);
+    }
+
 	function getSumOfSoldInstances() constant returns(uint) {
 	    return sumOfSoldInstances;
 	}
@@ -116,6 +120,10 @@ contract Publisher{
 	function getBook(uint num) constant returns (address) {
         return publishedBooks[num];
 	}
+
+    function getMetrics() constant returns (uint, uint, string) {
+        return (sumOfSoldInstances, sumOfPublications, name);
+    }
 
 	function getSumOfSoldInstances() constant returns(uint){
 	    return sumOfSoldInstances;
@@ -260,11 +268,10 @@ contract Library {
                         break;
                     }
                     users[userId].pubkeys[bookContract] = "";
-                    sumOfReturns;
+                    sumOfReturns++;
                     return true;
                 }
                 users[userId].pubkeys[bookContract] = "";
-                metrics.addReturn();
                 return true;
             }
         }
@@ -272,7 +279,11 @@ contract Library {
         return false;
     }
 
-    function getSumOfBoughtInstances() constant returns(uint){
+    function getMetrics() constant returns (uint, uint, uint, string) {
+        return (sumOfBoughtInstances, sumOfLoans, sumOfReturns, name);
+    }
+
+    function getSumOfBoughtInstances() constant returns(uint) {
         return sumOfBoughtInstances;
     }
 

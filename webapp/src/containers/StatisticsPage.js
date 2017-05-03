@@ -22,7 +22,7 @@ class StatisticsPage extends Component {
   }
 
   componentDidMount() {
-    this.requestLibraryAndPublisherStatistics();
+    this.props.requestLibraryAndPublisherStatistics();
   }
 
   constructor() {
@@ -30,6 +30,7 @@ class StatisticsPage extends Component {
   }
 
   render() {
+    const { library } = this.props;
     return (
         <div>
           { this.props.publishers.map(publisher => {
@@ -54,7 +55,7 @@ class StatisticsPage extends Component {
               >
                 <TableRow>
                   <TableRowColumn>
-                    Unit sold
+                    Units sold
                   </TableRowColumn>
                   <TableRowColumn>
                     { publisher.soldInstances }
@@ -83,7 +84,7 @@ class StatisticsPage extends Component {
               >
                 <TableRow>
                   <TableHeaderColumn colSpan="2" tooltip="Publisher statistics" style={{textAlign: 'center'}}>
-                    Library { /* library.name */ }
+                    Library { library.name }
                   </TableHeaderColumn>
                 </TableRow>
               </TableHeader>
@@ -96,15 +97,15 @@ class StatisticsPage extends Component {
                     Bought units
                   </TableRowColumn>
                   <TableRowColumn>
-                    {/*library.boughtInstances*/}
+                    {library.boughtInstances}
                   </TableRowColumn>                  
                 </TableRow>                
                 <TableRow>
                   <TableRowColumn>
-                    Loaned units
+                    Lent units
                   </TableRowColumn>
                   <TableRowColumn>
-                    {/*library.loans*/}
+                    {library.loans}
                   </TableRowColumn>                  
                 </TableRow>                         
                 <TableRow>
@@ -112,7 +113,7 @@ class StatisticsPage extends Component {
                     Returned units
                   </TableRowColumn>
                   <TableRowColumn>
-                    {/*library.returns*/}
+                    {library.returns}
                   </TableRowColumn>                  
                 </TableRow>                
               </TableBody>
