@@ -1,13 +1,17 @@
 [![Stories in Ready](https://badge.waffle.io/libchain/libchain.png?label=ready&title=Ready)](https://waffle.io/libchain/libchain)
-# libchain
+# LibChain
 
-# Contribution Guide 
- 
+![alt text][logo]
+
+[logo]: https://github.com/adam-p/markdown-here/raw/master/webapp/public/libchain_logo.png "LibChain Logo"
+
 ## Preliminaries
 
-Node (link me) (>= v6) and npm (link me) (>= v3) are required. 
+[Node](https://nodejs.org/) (>= v6) and [npm](https://www.npmjs.com/) (>= v3) are required. If you don't have [nvm](https://github.com/creationix/nvm
+) or [n](https://github.com/tj/n) we encourage you to take a look to make your node versions much easier to switch or to maintain at the latest update.
 
-After that, clone this repository and install the Truffle framework (link me) and for development purposes the ethererumjs-testrpc (link me) to run a in-memory blockchain.
+After that, clone this repository and install the [Truffle framework](truffleframework.com/) and for development purposes the [ethererumjs-testrpc](https://github.com/ethereumjs/testrpc
+) to run a in-memory blockchain.
 
 ```
 1. git clone git@github.com:libchain/libchain
@@ -70,9 +74,10 @@ At the moment you can do:
 
 ## Application components and general architecture.
 
-We use for the frontend React and Redux with Material UI. We have Redux actions that communicate directly with our backend server which is used mainly as a pipeline for the blockchain. 
+We use for the frontend [React](https://facebook.github.io/react/) and [Redux](redux.js.org/) with [Material UI](www.material-ui.com/). We have Redux actions that communicate directly with our backend server which is used mainly as a pipeline for the blockchain. 
 
-Server-side a RESTful API is exposed running on a NodeJS environment with the Express server framework. The server uses the `web3` to consume the JSON API of Ethereum. 
+Server-side a RESTful API is exposed running on a NodeJS environment with the Express server framework. The server uses the [`web3`](https://github.com/ethereum/web3.js/
+) to consume the JSON API of Ethereum. 
 
 We designed our contracts with help of the Truffle framework and the deployment and compilation is also made with help of that framework. 
 
