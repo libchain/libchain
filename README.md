@@ -9,7 +9,7 @@
 [Node](https://nodejs.org/) (>= v6) and [npm](https://www.npmjs.com/) (>= v3) are required. If you don't have [nvm](https://github.com/creationix/nvm
 ) or [n](https://github.com/tj/n) we encourage you to take a look to make your node versions much easier to switch or to maintain at the latest update.
 
-After that, clone this repository and install the [Truffle framework](truffleframework.com/) and for development purposes the [ethererumjs-testrpc](https://github.com/ethereumjs/testrpc
+After that, clone this repository and install the [Truffle framework](http://truffleframework.com/) and for development purposes the [ethererumjs-testrpc](https://github.com/ethereumjs/testrpc
 ) to run a in-memory blockchain.
 
 ```
